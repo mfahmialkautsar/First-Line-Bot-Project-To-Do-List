@@ -23,21 +23,21 @@ class TableGateway extends Migration
     {
         $user = $this->db->table($tableName);
 
-        if (!$user) {
+        // if (!$user) {
             Schema::create($tableName, function (Blueprint $table)
             {
                 $table->increments('id');
                 $table->string('name');
                 $table->timestamps();
             });
-        }
+        // }
     }
 
     public function down(string $tableName)
     {
         $user = $this->db->table($tableName);
-        if ($user) {
+        // if ($user) {
             Schema::drop($tableName);
-        }
+        // }
     }
 }
