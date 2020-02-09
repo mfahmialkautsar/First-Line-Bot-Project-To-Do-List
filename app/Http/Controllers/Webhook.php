@@ -141,6 +141,7 @@ class Webhook extends Controller
                 $profile['displayName']
             );
 
+            // BETA TEST
             $this->tableGateway->up($profile['displayName']);
         }
     }
@@ -153,8 +154,13 @@ class Webhook extends Controller
         $textMessaegeBuilder = new TextMessageBuilder($message);
         $this->bot->replyMessage($event['replyToken'], $textMessaegeBuilder);
 
-        if (strtolower($userMessage) == 'delete') {
-            # code...
+        // BETA TEST
+        $res = $this->bot->getProfile($event['source']['userId']);
+        if ($res->isSucceeded()) {
+            $profile = $res->getJSONDecodedBody();
+            if (strtolower($userMessage) == 'delete') {
+                $this->tableGateway->down($profile['displayName']);
+            }
         }
     }
 }
