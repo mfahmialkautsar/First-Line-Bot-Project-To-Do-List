@@ -17,9 +17,11 @@ class MemoryGateway
     }
 
     // Memory
-    function getMemory(string $tableName)
+    function getMemory(string $tableName, $id)
     {
-        $memory = $this->db->table($tableName);
+        $memory = $this->db->table($tableName)
+        ->where('id', $id)
+        ->first();
 
         if ($memory) {
             return (array) $memory;
