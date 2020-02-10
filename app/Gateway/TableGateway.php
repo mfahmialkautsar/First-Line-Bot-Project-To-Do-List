@@ -3,7 +3,6 @@
 namespace App\Gateway;
 
 use Illuminate\Database\ConnectionInterface;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -76,6 +75,6 @@ class TableGateway extends Migration
 
     public function count(string $tableName)
     {
-        return Model::count();
+        return $this->db->table($tableName)->count();
     }
 }
