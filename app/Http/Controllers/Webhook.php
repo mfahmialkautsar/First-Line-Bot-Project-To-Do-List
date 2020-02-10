@@ -182,13 +182,18 @@ class Webhook extends Controller
         $multiMessageBuilder = new MultiMessageBuilder();
         $message = new TextMessageBuilder("Remember These");
         $multiMessageBuilder->add($message);
-        
-        for ($i = 1; $i <= $total; $i++) {
+
+        $list = array();
+        for ($i = 0; $i < $total; $i++) {
             $memory = $this->memoryGateway->getMemory($tableName, $i);
-            $message = new TextMessageBuilder($memory['remember']);
-            $multiMessageBuilder->add($message);
+            // $message = new TextMessageBuilder($i + 1 . ". " . $memory['remember']);
+            // $multiMessageBuilder->add($message);
+            $list[] = $i + 1 . ". " . $memory['remember'];
         }
 
+        $message = new TextMessageBuilder($list);
+        $multiMessageBuilder->add($message);
+        
         // send message
         $response = $this->bot->replyMessage($replyToken, $multiMessageBuilder);
         $messageBuilder = new TextMessageBuilder("failed");
