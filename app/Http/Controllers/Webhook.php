@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Gateway\EventLogGateway;
+use App\Gateway\MemoryGateway;
 use App\Gateway\TableGateway;
 use App\Gateway\UserGateway;
 use Illuminate\Http\Request;
@@ -44,6 +45,10 @@ class Webhook extends Controller
      */
     private $tableGateway;
     /**
+     * @var MemoryGateway
+     */
+    private $memoryGateway;
+    /**
      * @var array
      */
     private $user;
@@ -54,7 +59,8 @@ class Webhook extends Controller
         Logger $logger,
         EventLogGateway $logGateway,
         UserGateway $userGateway,
-        TableGateway $tableGateway
+        TableGateway $tableGateway,
+        MemoryGateway $memoryGateway
     )
     {
         $this->request = $request;
@@ -63,6 +69,7 @@ class Webhook extends Controller
         $this->logGateway = $logGateway;
         $this->userGateway = $userGateway;
         $this->tableGateway = $tableGateway;
+        $this->memoryGateway = $memoryGateway;
 
         // creating bot object
         $httpClient = new CurlHTTPClient(getenv('CHANNEL_ACCESS_TOKEN'));
@@ -160,10 +167,23 @@ class Webhook extends Controller
             if (strtolower($message) == '##delete') {
                 $this->tableGateway->down($profile['userId']);
             }
-        }
 
-        if (strtolower($message) == "remember") {
-            $this->tableGateway->rememberThis($profile['userId'], "JUST REMEMBER");
+            if (strtolower($message) == "remember") {
+                $this->tableGateway->rememberThis($profile['userId'], "JUST REMEMBER");
+            }
+    
+            if (strtolower($message == "forget")) {
+                $this->remembering($profile['userId'], $event['replyToken']);
+            }
         }
+    }
+
+    private function remembering($tableName, $replyToken)
+    {
+        $memory = $this->memoryGateway->getMemory($tableName);
+
+        $messageBuilder = new TextMessageBuilder($memory['remember']);
+        // send message
+        $response = $this->bot->replyMessage($replyToken, $messageBuilder);
     }
 }
