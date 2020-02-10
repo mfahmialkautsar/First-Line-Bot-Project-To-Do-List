@@ -164,7 +164,7 @@ class Webhook extends Controller
         }
 
         if (strtolower("upl")) {
-            $this->tableGateway->up("TEST");
+            $this->tableGateway->up("test2");
         }
     }
 }
