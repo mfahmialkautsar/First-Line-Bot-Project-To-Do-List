@@ -168,6 +168,7 @@ class Webhook extends Controller
                 $message = "Ok, I remember that.";
             } else if (strtolower($message) == "forget") {
                 $this->remembering($profile['userId'], $event['replyToken']);
+                $message = "Sorry, there's nothing to be remembered.";
             }
 
             $textMessaegeBuilder = new TextMessageBuilder($message);

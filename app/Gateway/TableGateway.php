@@ -32,7 +32,7 @@ class TableGateway extends Migration
             Schema::create($tableName, function (Blueprint $table)
             {
                 $table->increments('id');
-                $table->integer('no')->unique();
+                $table->integer('no')->index();
                 $table->string('remember');
                 $table->timestamps();
             });
