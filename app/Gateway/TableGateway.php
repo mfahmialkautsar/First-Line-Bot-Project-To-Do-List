@@ -26,13 +26,13 @@ class TableGateway extends Migration
      */
     public function up(string $tableName)
     {
-        $user = $this->db->table($tableName);
+        // $user = $this->db->table($tableName);
 
         if (!Schema::hasTable($tableName)) {
             Schema::create($tableName, function (Blueprint $table)
             {
                 $table->increments('id');
-                $table->string('name');
+                $table->string('remember');
                 $table->timestamps();
             });
             // $this->db->select("CREATE TABLE IF NOT EXISTS $tableName
@@ -53,10 +53,23 @@ class TableGateway extends Migration
      */
     public function down(string $tableName)
     {
-        $user = $this->db->table($tableName);
+        // $user = $this->db->table($tableName);
         // if ($user) {
             Schema::dropIfExists($tableName);
             // $this->db->select("DROP TABLE IF EXISTS $tableName;");
         // }
+    }
+
+    public function rememberThis(string $tableName, string $note)
+    {
+        if (Schema::hasTable($tableName)) {
+            $this->db->table($tableName)
+            ->insert([
+                'remember' => $note
+            ]);
+        } else {
+            $this->up($tableName);
+            $this->rememberThis($tableName, $note);
+        }
     }
 }

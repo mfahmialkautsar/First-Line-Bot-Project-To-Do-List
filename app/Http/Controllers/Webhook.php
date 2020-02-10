@@ -142,15 +142,14 @@ class Webhook extends Controller
             );
 
             // BETA TEST
-            $this->tableGateway->up($profile['displayName']);
+            $this->tableGateway->up($profile['userId']);
         }
     }
 
     private function textMessage($event)
     {
-        $userMessage = $event['message']['text'];
+        $message = $event['message']['text'];
         
-        $message = $userMessage;
         $textMessaegeBuilder = new TextMessageBuilder($message);
         $this->bot->replyMessage($event['replyToken'], $textMessaegeBuilder);
 
@@ -158,13 +157,13 @@ class Webhook extends Controller
         $res = $this->bot->getProfile($event['source']['userId']);
         if ($res->isSucceeded()) {
             $profile = $res->getJSONDecodedBody();
-            if (strtolower($userMessage) == 'delete') {
-                $this->tableGateway->down($profile['displayName']);
+            if (strtolower($message) == '##delete') {
+                $this->tableGateway->down($profile['userId']);
             }
         }
 
-        if (strtolower("upl")) {
-            $this->tableGateway->up("test2");
+        if (strtolower($message) == "remember") {
+            $this->tableGateway->rememberThis($profile['userId'], "JUST REMEMBER");
         }
     }
 }
