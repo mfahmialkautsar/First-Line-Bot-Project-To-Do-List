@@ -179,7 +179,7 @@ class Webhook extends Controller
     private function remembering($tableName, $replyToken)
     {
         $total = $this->tableGateway->count($tableName);
-        $mem = array();
+        $mem = array("test1");
         for ($i=1; $i <= $total; $i++) { 
             $memory = $this->memoryGateway->getMemory($tableName, $i);
             // if ($i < $total) {
