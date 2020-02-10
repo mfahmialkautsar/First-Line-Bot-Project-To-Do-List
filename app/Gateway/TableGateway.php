@@ -28,8 +28,8 @@ class TableGateway extends Migration
     {
         $user = $this->db->table($tableName);
 
-        // if (!Schema::hasTable("test2")) {
-            Schema::create("test2", function (Blueprint $table)
+        if (!Schema::hasTable($tableName)) {
+            Schema::create($tableName, function (Blueprint $table)
             {
                 $table->increments('id');
                 $table->string('name');
@@ -43,7 +43,7 @@ class TableGateway extends Migration
             //     line_id varchar(50) NULL,
             //     PRIMARY KEY (id)
             // );");
-        // }
+        }
     }
 
     /**
@@ -55,7 +55,7 @@ class TableGateway extends Migration
     {
         $user = $this->db->table($tableName);
         // if ($user) {
-            Schema::dropIfExists("test2");
+            Schema::dropIfExists($tableName);
             // $this->db->select("DROP TABLE IF EXISTS $tableName;");
         // }
     }
