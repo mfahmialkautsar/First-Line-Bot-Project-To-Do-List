@@ -182,14 +182,13 @@ class Webhook extends Controller
         $mem = array();
         for ($i=1; $i <= $total; $i++) { 
             $memory = $this->memoryGateway->getMemory($tableName, $i);
-            if ($i < $total) {
-                array_push($mem, $memory['remember'] . '\n');
-            } else {
+            // if ($i < $total) {
+            //     array_push($mem, $memory['remember'] . '\n');
+            // } else {
                 array_push($mem, $memory['remember']);
-            }
+            // }
             $messageBuilder = new TextMessageBuilder($mem);
         }
-
 
         // send message
         $response = $this->bot->replyMessage($replyToken, $messageBuilder);
