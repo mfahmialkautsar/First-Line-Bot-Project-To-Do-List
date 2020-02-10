@@ -157,9 +157,6 @@ class Webhook extends Controller
     {
         $message = $event['message']['text'];
         
-        $textMessaegeBuilder = new TextMessageBuilder($message);
-        $this->bot->replyMessage($event['replyToken'], $textMessaegeBuilder);
-
         // BETA TEST
         $res = $this->bot->getProfile($event['source']['userId']);
         if ($res->isSucceeded()) {
@@ -176,6 +173,9 @@ class Webhook extends Controller
                 $this->remembering($profile['userId'], $event['replyToken']);
             }
         }
+
+        $textMessaegeBuilder = new TextMessageBuilder($message);
+        $this->bot->replyMessage($event['replyToken'], $textMessaegeBuilder);
     }
 
     private function remembering($tableName, $replyToken)
