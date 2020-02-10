@@ -180,20 +180,20 @@ class Webhook extends Controller
     {
         $total = $this->tableGateway->count($tableName);
         $multiMessageBuilder = new MultiMessageBuilder();
-        $message = new TextMessageBuilder("Remember These");
-        $multiMessageBuilder->add($message);
+        // $message = new TextMessageBuilder("Remember These");
+        // $multiMessageBuilder->add($message);
 
         $list = array();
         for ($i = 0; $i < $total; $i++) {
-            $memory = $this->memoryGateway->getMemory($tableName, $i);
+            $memory = $this->memoryGateway->getMemory($tableName, $i + 1);
             // $message = new TextMessageBuilder($i + 1 . ". " . $memory['remember']);
             // $multiMessageBuilder->add($message);
-            $list[] = $i + 1 . ". " . $memory['remember'];
+            array_push($list, $i + 1 . ". " . $memory['remember']);
         }
 
         $message = new TextMessageBuilder($list);
         $multiMessageBuilder->add($message);
-        
+
         // send message
         $response = $this->bot->replyMessage($replyToken, $multiMessageBuilder);
         $messageBuilder = new TextMessageBuilder("failed");
