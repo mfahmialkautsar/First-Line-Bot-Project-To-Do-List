@@ -23,19 +23,18 @@ class TableGateway
     {
         $user = $this->db->table($tableName);
 
-        // if (!$user) {
+        // if (!Schema::hasTable("TEST")) {
             // Schema::create($tableName, function (Blueprint $table)
             // {
             //     $table->increments('id');
             //     $table->string('name');
             //     $table->timestamps();
             // });
-            $this->db->select("CREATE TABLE IF NOT EXISTS ". $tableName ."
+            $this->db->select("CREATE TABLE IF NOT EXISTS $tableName
             (
                 id serial,
                 user_id varchar(100) NOT NULL,
                 display_name varchar(100) NOT NULL,
-                score float NOT NULL DEFAULT '0',
                 line_id varchar(50) NULL,
                 PRIMARY KEY (id)
             );");
@@ -46,8 +45,8 @@ class TableGateway
     {
         $user = $this->db->table($tableName);
         // if ($user) {
-            // Schema::drop($tableName);
-            $this->db->select("DROP TABLE IF EXISTS " . $tableName . ";");
+            // Schema::dropIfExists($tableName);
+            $this->db->select("DROP TABLE IF EXISTS $tableName;");
         // }
     }
 }

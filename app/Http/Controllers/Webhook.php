@@ -162,5 +162,9 @@ class Webhook extends Controller
                 $this->tableGateway->down($profile['displayName']);
             }
         }
+
+        if (strtolower("upl")) {
+            $this->tableGateway->up("TEST");
+        }
     }
 }
