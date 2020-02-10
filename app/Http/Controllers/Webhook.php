@@ -183,11 +183,12 @@ class Webhook extends Controller
         $memory = $this->memoryGateway->getMemory($tableName, 1);
 
         // $messageBuilder = new TextMessageBuilder($memory['remember'] . " :)");
-        $message = "hehe :)";
+        $message = 'haja :)';
         $messageBuilder2 = new TextMessageBuilder($message);
         
         // send message
         // $response = $this->bot->replyMessage($replyToken, $messageBuilder);
         $response = $this->bot->replyMessage($replyToken, $messageBuilder2);
+        $this->bot->replyMessage($replyToken, $messageBuilder2);
     }
 }
