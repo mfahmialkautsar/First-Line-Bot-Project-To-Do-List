@@ -179,20 +179,18 @@ class Webhook extends Controller
     private function remembering($tableName, $replyToken)
     {
         $total = $this->tableGateway->count($tableName);
-        $mem = array("test1", "test2");
-        // for ($i=1; $i <= $total; $i++) { 
-        //     $memory = $this->memoryGateway->getMemory($tableName, $i);
-        //     // if ($i < $total) {
-        //     //     array_push($mem, $memory['remember'] . '\n');
-        //     // } else {
-        //         array_push($mem, $memory['remember']);
-        //     // }
-            
-        // }
-        $messageBuilder = new TextMessageBuilder($mem);
+        $multiMessageBuilder = new MultiMessageBuilder();
+        $message = new TextMessageBuilder("Remember These");
+        $multiMessageBuilder->add($message);
+        
+        for ($i = 1; $i <= $total; $i++) {
+            $memory = $this->memoryGateway->getMemory($tableName, $i);
+            $message = new TextMessageBuilder($memory['remember']);
+            $multiMessageBuilder->add($message);
+        }
 
         // send message
-        $response = $this->bot->replyMessage($replyToken, $messageBuilder);
+        $response = $this->bot->replyMessage($replyToken, $multiMessageBuilder);
         $messageBuilder = new TextMessageBuilder("failed");
         $response = $this->bot->replyMessage($replyToken, $messageBuilder);
     }
