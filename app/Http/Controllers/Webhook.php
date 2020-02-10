@@ -184,6 +184,6 @@ class Webhook extends Controller
 
         $messageBuilder = new TextMessageBuilder($memory['remember']);
         // send message
-        $response = $this->bot->replyMessage($replyToken, $messageBuilder);
+        $this->bot->replyMessage($replyToken, $messageBuilder);
     }
 }
