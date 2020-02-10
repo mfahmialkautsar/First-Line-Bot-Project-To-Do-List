@@ -162,7 +162,7 @@ class Webhook extends Controller
             $profile = $res->getJSONDecodedBody();
             if (strtolower($message) == '##delete') {
                 $this->tableGateway->down($profile['userId']);
-                $message = "You have delete all the memories";
+                $message = "You have deleted all the memories";
             } else if (strtolower($message) == "remember") {
                 $this->tableGateway->rememberThis($profile['userId'], "JUST REMEMBER");
                 $message = "Ok, I remember that.";
@@ -177,7 +177,9 @@ class Webhook extends Controller
 
     private function remembering($tableName, $replyToken)
     {
-        $memory = $this->memoryGateway->getMemory($tableName);
+        // for ($i=0; $i < ; $i++) { 
+            $memory = $this->memoryGateway->getMemory($tableName, 1);
+        // }
 
         $messageBuilder = new TextMessageBuilder($memory['remember']);
 
