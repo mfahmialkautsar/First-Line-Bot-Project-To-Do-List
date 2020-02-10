@@ -178,9 +178,10 @@ class Webhook extends Controller
 
     private function remembering($tableName, $replyToken)
     {
-        // for ($i=0; $i < ; $i++) { 
+        $total = $this->tableGateway->count($tableName);
+        for ($i=0; $i < $total; $i++) { 
             $memory = $this->memoryGateway->getMemory($tableName, 1);
-        // }
+        }
 
         $messageBuilder = new TextMessageBuilder($memory['remember']);
 

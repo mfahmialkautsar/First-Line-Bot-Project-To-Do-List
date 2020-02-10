@@ -3,6 +3,7 @@
 namespace App\Gateway;
 
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -32,7 +33,6 @@ class TableGateway extends Migration
             Schema::create($tableName, function (Blueprint $table)
             {
                 $table->increments('id');
-                $table->integer('no')->index();
                 $table->string('remember');
                 $table->timestamps();
             });
@@ -72,5 +72,10 @@ class TableGateway extends Migration
             $this->up($tableName);
             $this->rememberThis($tableName, $note);
         }
+    }
+
+    public function count(string $tableName)
+    {
+        return Model::count();
     }
 }
