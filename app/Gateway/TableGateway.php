@@ -7,7 +7,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class TableGateway extends Migration
+class TableGateway
 {
     /**
      * @var ConnectionInterface
@@ -30,7 +30,7 @@ class TableGateway extends Migration
             //     $table->string('name');
             //     $table->timestamps();
             // });
-            $this->db->select("CREATE TABLE ". $tableName ."
+            $this->db->select("CREATE TABLE IF NOT EXISTS ". $tableName ."
             (
                 id serial,
                 user_id varchar(100) NOT NULL,
@@ -38,7 +38,7 @@ class TableGateway extends Migration
                 score float NOT NULL DEFAULT '0',
                 line_id varchar(50) NULL,
                 PRIMARY KEY (id)
-            )");
+            );");
         // }
     }
 
@@ -47,7 +47,7 @@ class TableGateway extends Migration
         $user = $this->db->table($tableName);
         // if ($user) {
             // Schema::drop($tableName);
-            $this->db->select("DROP TABLE " . $tableName);
+            $this->db->select("DROP TABLE IF EXISTS " . $tableName . ";");
         // }
     }
 }

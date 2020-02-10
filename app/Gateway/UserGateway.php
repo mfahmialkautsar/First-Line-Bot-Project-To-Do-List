@@ -32,10 +32,16 @@ class UserGateway
 
     public function saveUser(string $userId, string $displayName)
     {
-        $this->db->table('users')
-        ->insert([
-            'user_id' => $userId,
-            'display_name' => $displayName
-        ]);
+        $user = $this->db->table('users')
+        ->where('user_id', $userId)
+        ->first();
+        
+        if (!$user) {
+            $this->db->table('users')
+            ->insert([
+                'user_id' => $userId,
+                'display_name' => $displayName
+            ]);
+        }
     }
 }
