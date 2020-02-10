@@ -19,11 +19,16 @@ class TableGateway extends Migration
         $this->db = app('db');
     }
 
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
     public function up(string $tableName)
     {
         $user = $this->db->table($tableName);
 
-        if (!Schema::hasTable("test2")) {
+        // if (!Schema::hasTable("test2")) {
             Schema::create("test2", function (Blueprint $table)
             {
                 $table->increments('id');
@@ -38,9 +43,14 @@ class TableGateway extends Migration
             //     line_id varchar(50) NULL,
             //     PRIMARY KEY (id)
             // );");
-        }
+        // }
     }
 
+    /**
+     * Reverse the migration
+     * 
+     * @return void
+     */
     public function down(string $tableName)
     {
         $user = $this->db->table($tableName);
