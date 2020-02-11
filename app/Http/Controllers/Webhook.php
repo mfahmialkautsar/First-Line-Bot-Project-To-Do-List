@@ -158,7 +158,7 @@ class Webhook extends Controller
         $trim = trim($text);
         $words = preg_split("/[\s,]+/", $trim);
         $intent = $words[0];
-        
+
         // BETA TEST
         $res = $this->bot->getProfile($event['source']['userId']);
         if ($res->isSucceeded()) {
@@ -166,7 +166,6 @@ class Webhook extends Controller
             if (strtolower($intent) == '#~delete') {
                 $this->tableGateway->down($profile['userId']);
                 $message = "You have deleted all the memories";
-
             } else if (strtolower($intent) == "~remember") {
                 if (isset($words[1])) {
                     $join = implode(" ", $words);
@@ -191,24 +190,28 @@ class Webhook extends Controller
     private function remembering($tableName, $replyToken)
     {
         $total = $this->tableGateway->count($tableName);
-        $multiMessageBuilder = new MultiMessageBuilder();
-        // $message = new TextMessageBuilder("Remember These");
-        // $multiMessageBuilder->add($message);
-
-        $list = array("Here's what you should remember:");
-        for ($i = 0; $i < $total; $i++) {
-            $memory = $this->memoryGateway->getMemory($tableName, $i + 1);
-            // $message = new TextMessageBuilder($i + 1 . ". " . $memory['remember']);
+        if ($total == "Sorry, there's nothing to be remembered") {
+            return $message = "Sorry, there's nothing to be remembered";
+        } else {
+            $multiMessageBuilder = new MultiMessageBuilder();
+            // $message = new TextMessageBuilder("Remember These");
             // $multiMessageBuilder->add($message);
-            array_push($list, $i + 1 . ". " . $memory['remember']);
+
+            $list = array("Here's what you should remember:");
+            for ($i = 0; $i < $total; $i++) {
+                $memory = $this->memoryGateway->getMemory($tableName, $i + 1);
+                // $message = new TextMessageBuilder($i + 1 . ". " . $memory['remember']);
+                // $multiMessageBuilder->add($message);
+                array_push($list, $i + 1 . ". " . $memory['remember']);
+            }
+
+            $message = new TextMessageBuilder(implode("\n", $list));
+            $multiMessageBuilder->add($message);
+
+            // send message
+            $response = $this->bot->replyMessage($replyToken, $multiMessageBuilder);
+            $messageBuilder = new TextMessageBuilder("failed");
+            $response = $this->bot->replyMessage($replyToken, $messageBuilder);
         }
-
-        $message = new TextMessageBuilder(implode("\n", $list));
-        $multiMessageBuilder->add($message);
-
-        // send message
-        $response = $this->bot->replyMessage($replyToken, $multiMessageBuilder);
-        $messageBuilder = new TextMessageBuilder("failed");
-        $response = $this->bot->replyMessage($replyToken, $messageBuilder);
     }
 }

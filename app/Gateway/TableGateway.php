@@ -78,6 +78,11 @@ class TableGateway extends Migration
 
     public function count(string $tableName)
     {
-        return $this->db->table($tableName)->count();
+        $table = $this->db->table($tableName);
+        if ($table) {
+            return $table->count();
+        } else {
+            return "Sorry, there's nothing to be remembered";
+        }
     }
 }
