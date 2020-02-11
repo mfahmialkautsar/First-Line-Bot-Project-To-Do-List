@@ -159,6 +159,9 @@ class Webhook extends Controller
         $words = preg_split("/[\s,]+/", $trim);
         $intent = $words[0];
         
+        array_splice($words, 0, 1);
+        $note = join($words, " ");
+        
         // BETA TEST
         $res = $this->bot->getProfile($event['source']['userId']);
         if ($res->isSucceeded()) {
@@ -167,15 +170,13 @@ class Webhook extends Controller
                 $this->tableGateway->down($profile['userId']);
                 $message = "You have deleted all the memories";
             } else if (strtolower($intent) == "~remember") {
-                array_splice($words, 0, 1);
-                $note = join($words, " ");
                 if ($note) {
                     $this->tableGateway->rememberThis($profile['userId'], $note);
                     $message = "Ok, I remember that.";
                 } else {
                     $memory = "Sorry, what should I remember?\nUse \"~remember [your note]\"";
                 }
-            } elseif (strtolower($intent) == "~forget") {
+            } else if (strtolower($intent) == "~forget") {
                 # code...
             }
              else if (strtolower($intent) == "~show") {
