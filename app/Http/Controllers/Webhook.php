@@ -155,28 +155,28 @@ class Webhook extends Controller
     private function textMessage($event)
     {
         $text = $event['message']['text'];
-        $trim = trim($text);
-        $words = preg_split("/[\s,]+/", $trim);
-        $intent = $words[0];
+        // $trim = trim($text);
+        // $words = preg_split("/[\s,]+/", $trim);
+        // $intent = $words[0];
         
-        array_splice($words, 0, 1);
-        $note = join($words, " ");
+        // array_splice($words, 0, 1);
+        // $note = join($words, " ");
 
         // BETA TEST
         $res = $this->bot->getProfile($event['source']['userId']);
         if ($res->isSucceeded()) {
             $profile = $res->getJSONDecodedBody();
-            if (strtolower($intent) == '#~delete') {
+            if (strtolower($text) == '#~delete') {
                 $this->tableGateway->down($profile['userId']);
                 $message = "You have deleted all the memories";
             } else if (strtolower($text) == "remember") {
-                if ($note) {
+                // if ($note) {
                     $this->tableGateway->rememberThis($profile['userId'], "the test");
                     $message = "Ok, I remember that.";
-                } else {
-                    $memory = "Sorry, what should I remember?\nUse \"~remember [your note]\"";
-                }
-            } elseif (strtolower($intent) == "~forget") {
+                // } else {
+                //     $memory = "Sorry, what should I remember?\nUse \"~remember [your note]\"";
+                // }
+            // } elseif (strtolower($intent) == "~forget") {
                 # code...
             }
              else if (strtolower($text) == "show") {
