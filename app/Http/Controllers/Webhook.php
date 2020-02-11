@@ -172,7 +172,7 @@ class Webhook extends Controller
             if (strtolower($intent) == '#~delete') {
                 $this->tableGateway->down($profile['userId']);
                 $message = "You have deleted all the memories";
-            } else if (strtolower($intent) == "~remember") {
+            } else if (strtolower($intent) == "~r") {
                 if (isset($note) && $note) {
                     $message = $this->tableGateway->rememberThis($profile['userId'], $note);
                 } else {
@@ -186,7 +186,7 @@ class Webhook extends Controller
                 $message = "Sorry, I don't understand";
             }
 
-            if (!isset($message) && !$message) {
+            if (!$message) {
                 $message = "Sorry, there's something wrong";
             }
             $textMessaegeBuilder = new TextMessageBuilder($message);

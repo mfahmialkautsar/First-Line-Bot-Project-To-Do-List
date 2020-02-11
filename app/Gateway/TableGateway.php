@@ -29,8 +29,7 @@ class TableGateway extends Migration
         // $user = $this->db->table($tableName);
 
         if (!Schema::hasTable($tableName)) {
-            Schema::create($tableName, function (Blueprint $table)
-            {
+            Schema::create($tableName, function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('remember');
                 $table->timestamps();
@@ -55,22 +54,19 @@ class TableGateway extends Migration
     {
         // $user = $this->db->table($tableName);
         // if ($user) {
-            Schema::dropIfExists($tableName);
-            // $this->db->select("DROP TABLE IF EXISTS $tableName;");
+        Schema::dropIfExists($tableName);
+        // $this->db->select("DROP TABLE IF EXISTS $tableName;");
         // }
     }
 
     public function rememberThis($tableName, $note)
     {
         if (Schema::hasTable($tableName)) {
-            
-            if ($note) {
-                $this->db->table($tableName)
+            $this->db->table($tableName)
                 ->insert([
                     'remember' => $note
                 ]);
-                return "Ok, I remember that.";
-            }
+            return "Ok, I remember that.";
         } else {
             $this->up($tableName);
             $this->rememberThis($tableName, $note);
