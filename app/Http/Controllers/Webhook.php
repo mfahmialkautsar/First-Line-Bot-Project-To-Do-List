@@ -175,23 +175,27 @@ class Webhook extends Controller
             } else if (strtolower($intent) == "~remember") {
                 if (isset($note) && $note) {
                     $this->tableGateway->rememberThis($profile['userId'], $note);
+                    $message = "Ok, I remember that.";
                 } else {
                     $message = "Sorry, what should I remember?\nUse \"~remember [your note]\"";
                 }
             } else if (strtolower($intent) == "~forget") {
                 # code...
             } else if (strtolower($intent) == "~show") {
-                $this->remembering($profile['userId']);
+                $this->remembering($profile['userId'], $event['replyToken']);
             } else {
                 $message = "Sorry, I don't understand";
             }
 
+            if (!$message) {
+                $message = "Sorry, there's something wrong";
+            }
             $textMessaegeBuilder = new TextMessageBuilder($message);
             $this->bot->replyMessage($event['replyToken'], $textMessaegeBuilder);
         }
     }
 
-    private function remembering($tableName)
+    private function remembering($tableName, $replyToken)
     {
         $message = "Sorry, there's nothing to be remembered";
         $total = $this->tableGateway->count($tableName);
@@ -204,7 +208,9 @@ class Webhook extends Controller
 
             $message = new TextMessageBuilder(implode("\n", $list));
         }
-        return $message;
+
+        // response message
+        $response = $this->bot->replyMessage($replyToken, $message);
     }
 
     private function forgetting($tableName, $replyToken, $index)
