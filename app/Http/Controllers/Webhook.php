@@ -154,6 +154,7 @@ class Webhook extends Controller
 
     private function textMessage($event)
     {
+        $message = "Sorry, there's something wrong";
         $text = $event['message']['text'];
         $trim = trim($text);
         $words = preg_split("/[\s,]+/", $trim);
@@ -172,11 +173,11 @@ class Webhook extends Controller
             if (strtolower($intent) == '#~delete') {
                 $this->tableGateway->down($profile['userId']);
                 $message = "You have deleted all the memories";
-            } else if (strtolower($intent) == "~r") {
+            } else if (strtolower($intent) == "~note") {
                 if (isset($note) && $note) {
                     $message = $this->tableGateway->rememberThis($profile['userId'], $note);
                 } else {
-                    $message = "Sorry, what should I remember?\nUse \"~remember [your note]\"";
+                    $message = "What should I remember?\nUse \"~remember [your note]\"";
                 }
             } else if (strtolower($intent) == "~forget") {
                 # code...
@@ -186,12 +187,11 @@ class Webhook extends Controller
                 $message = "Sorry, I don't understand";
             }
 
-            if (!isset($message) && !$message) {
-                $message = "Sorry, there's something wrong";
-            }
-            $textMessaegeBuilder = new TextMessageBuilder($message);
-            $this->bot->replyMessage($event['replyToken'], $textMessaegeBuilder);
         }
+
+        // send response
+        $textMessaegeBuilder = new TextMessageBuilder($message);
+        $this->bot->replyMessage($event['replyToken'], $textMessaegeBuilder);
     }
 
     private function remembering($tableName)
@@ -206,7 +206,7 @@ class Webhook extends Controller
 
             $theMessage = implode("\n", $list);
         } else {
-            $theMessage = "Sorry, there's nothing to be remembered";
+            $theMessage = "There's nothing to be remembered";
         }
 
         return $theMessage;
