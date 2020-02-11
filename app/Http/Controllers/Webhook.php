@@ -189,9 +189,10 @@ class Webhook extends Controller
 
     private function remembering($tableName, $replyToken)
     {
+        $message = "Sorry, there's nothing to be remembered";
         $total = $this->tableGateway->count($tableName);
-        if ($total == "Sorry, there's nothing to be remembered") {
-            return $message = "Sorry, there's nothing to be remembered";
+        if ($total == $message) {
+            return $message;
         } else {
             $multiMessageBuilder = new MultiMessageBuilder();
             // $message = new TextMessageBuilder("Remember These");

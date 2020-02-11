@@ -78,9 +78,8 @@ class TableGateway extends Migration
 
     public function count(string $tableName)
     {
-        $table = $this->db->table($tableName);
-        if ($table) {
-            return $table->count();
+        if (Schema::hasTable($tableName)) {
+            return $this->db->table($tableName)->count();
         } else {
             return "Sorry, there's nothing to be remembered";
         }
