@@ -154,19 +154,27 @@ class Webhook extends Controller
 
     private function textMessage($event)
     {
-        $message = $event['message']['text'];
+        $text = $event['message']['text'];
+        $trim = trim($text);
+        $words = preg_split("/[\s,]+/", $trim);
+        $intent = $words[0];
+        array_splice($words, 0, 1);
+        $note = join($words, " ");
 
         // BETA TEST
         $res = $this->bot->getProfile($event['source']['userId']);
         if ($res->isSucceeded()) {
             $profile = $res->getJSONDecodedBody();
-            if (strtolower($message) == '##delete') {
+            if (strtolower($intent) == '#~delete') {
                 $this->tableGateway->down($profile['userId']);
                 $message = "You have deleted all the memories";
-            } else if (strtolower($message) == "remember") {
-                $this->tableGateway->rememberThis($profile['userId'], "JUST REMEMBER");
+            } else if (strtolower($intent) == "~remember") {
+                $this->tableGateway->rememberThis($profile['userId'], $note);
                 $message = "Ok, I remember that.";
-            } else if (strtolower($message) == "forget") {
+            } elseif (strtolower($intent) == "~forget") {
+                # code...
+            }
+             else if (strtolower($intent) == "~show") {
                 $this->remembering($profile['userId'], $event['replyToken']);
                 $message = "Sorry, there's nothing to be remembered.";
             }
@@ -191,7 +199,7 @@ class Webhook extends Controller
             array_push($list, $i + 1 . ". " . $memory['remember']);
         }
 
-        $message = new TextMessageBuilder($list);
+        $message = new TextMessageBuilder(implode("\n", $list));
         $multiMessageBuilder->add($message);
 
         // send message

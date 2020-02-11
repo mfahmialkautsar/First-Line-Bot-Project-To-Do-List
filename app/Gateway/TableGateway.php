@@ -60,7 +60,7 @@ class TableGateway extends Migration
         // }
     }
 
-    public function rememberThis(string $tableName, string $note)
+    public function rememberThis($tableName, $note)
     {
         if (Schema::hasTable($tableName)) {
             $this->db->table($tableName)
