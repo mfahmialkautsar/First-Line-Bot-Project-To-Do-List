@@ -181,7 +181,7 @@ class Webhook extends Controller
             } else if (strtolower($intent) == "~forget") {
                 # code...
             } else if (strtolower($intent) == "~show") {
-                $message = $this->remembering($profile['userId'], $event['replyToken']);
+                $message = $this->remembering($profile['userId']);
             } else {
                 $message = "Sorry, I don't understand";
             }
