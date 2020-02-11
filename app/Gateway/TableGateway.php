@@ -61,17 +61,16 @@ class TableGateway extends Migration
 
     public function rememberThis($tableName, $note)
     {
-        $message = "Ok, I remember that.";
         if (Schema::hasTable($tableName)) {
             $this->db->table($tableName)
                 ->insert([
                     'remember' => $note
                 ]);
-            return $message;
         } else {
             $this->up($tableName);
             $this->rememberThis($tableName, $note);
         }
+        return "Ok, I remember that.";
     }
 
     public function count(string $tableName)
