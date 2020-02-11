@@ -186,7 +186,7 @@ class Webhook extends Controller
                 $message = "Sorry, I don't understand";
             }
 
-            if (!$message) {
+            if (!isset($message) && !$message) {
                 $message = "Sorry, there's something wrong";
             }
             $textMessaegeBuilder = new TextMessageBuilder($message);
