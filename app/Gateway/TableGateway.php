@@ -63,8 +63,9 @@ class TableGateway extends Migration
     public function rememberThis($tableName, $note)
     {
         if (Schema::hasTable($tableName)) {
-            array_splice($note, 0, 1);
-            $theNote = join($note, " ");
+            $join = join($note, " ");
+            $theNote = substr($join, strpos($join, $note[1]));
+            
             if ($theNote) {
                 $this->db->table($tableName)
                 ->insert([
@@ -72,6 +73,7 @@ class TableGateway extends Migration
                 ]);
             } else {
                 # code...
+                print_r("NOOOOOO");
             }
         } else {
             $this->up($tableName);
