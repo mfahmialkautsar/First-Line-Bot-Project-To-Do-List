@@ -168,7 +168,7 @@ class Webhook extends Controller
                 $message = "You have deleted all the memories";
             } else if (strtolower($intent) == "~remember") {
                 // if ($note) {
-                    $this->tableGateway->rememberThis($profile['userId'], $words);
+                    // $this->tableGateway->rememberThis($profile['userId'], $words);
                     $message = "Ok, I remember that.";
                 // } else {
                 //     $memory = "Sorry, what should I remember?\nUse \"~remember [your note]\"";
