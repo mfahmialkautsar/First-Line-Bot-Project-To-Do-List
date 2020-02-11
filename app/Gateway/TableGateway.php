@@ -68,8 +68,7 @@ class TableGateway extends Migration
                     ->insert([
                         'remember' => $note
                     ]);
-                    $message = "Ok, I remember that.";
-                return $message;
+                return $message = "Ok, I remember that.";
             }
         } else {
             $this->up($tableName);
