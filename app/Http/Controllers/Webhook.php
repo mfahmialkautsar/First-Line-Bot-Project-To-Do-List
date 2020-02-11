@@ -160,8 +160,10 @@ class Webhook extends Controller
         $intent = $words[0];
 
         // create the right words
-        $join = implode(" ", $words);
-        $note = substr($join, strpos($join, $words[1]));
+        if (isset($words[1])) {
+            $join = implode(" ", $words);
+            $note = substr($join, strpos($join, $words[1]));
+        }
 
         // BETA TEST
         $res = $this->bot->getProfile($event['source']['userId']);
@@ -171,7 +173,7 @@ class Webhook extends Controller
                 $this->tableGateway->down($profile['userId']);
                 $message = "You have deleted all the memories";
             } else if (strtolower($intent) == "~remember") {
-                if (isset($words[1])) {
+                if (isset($note) && !$note) {
                     $this->tableGateway->rememberThis($profile['userId'], $note);
                 } else {
                     $message = "Sorry, what should I remember?\nUse \"~remember [your note]\"";
