@@ -173,7 +173,7 @@ class Webhook extends Controller
                 $this->tableGateway->down($profile['userId']);
                 $message = "You have deleted all the memories";
             } else if (strtolower($intent) == "~remember") {
-                if (isset($note) && !$note) {
+                if (isset($note) && $note) {
                     $this->tableGateway->rememberThis($profile['userId'], $note);
                 } else {
                     $message = "Sorry, what should I remember?\nUse \"~remember [your note]\"";
@@ -196,8 +196,6 @@ class Webhook extends Controller
         $message = "Sorry, there's nothing to be remembered";
         $total = $this->tableGateway->count($tableName);
         if ($total != 0) {
-            return $message;
-        } else {
             $list = array("Here's what you should remember:");
             for ($i = 0; $i < $total; $i++) {
                 $memory = $this->memoryGateway->getMemory($tableName, $i + 1);
@@ -205,8 +203,8 @@ class Webhook extends Controller
             }
 
             $message = new TextMessageBuilder(implode("\n", $list));
-            return $message;
         }
+        return $message;
     }
 
     private function forgetting($tableName, $replyToken, $index)
