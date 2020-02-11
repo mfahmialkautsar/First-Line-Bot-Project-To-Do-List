@@ -158,6 +158,7 @@ class Webhook extends Controller
         $trim = trim($text);
         $words = preg_split("/[\s,]+/", $trim);
         $intent = $words[0];
+        
         array_splice($words, 0, 1);
         $note = join($words, " ");
 
@@ -169,12 +170,16 @@ class Webhook extends Controller
                 $this->tableGateway->down($profile['userId']);
                 $message = "You have deleted all the memories";
             } else if (strtolower($intent) == "~remember") {
-                $this->tableGateway->rememberThis($profile['userId'], $note);
-                $message = "Ok, I remember that.";
+                if ($note) {
+                    $this->tableGateway->rememberThis($profile['userId'], $note);
+                    $message = "Ok, I remember that.";
+                } else {
+                    $memory = "Sorry, what should I remember?\nUse \"~remember [your note]\"";
+                }
             } elseif (strtolower($intent) == "~forget") {
                 # code...
             }
-             else if (strtolower($intent) == "~show") {
+             else if (strtolower($trim) == "~show") {
                 $this->remembering($profile['userId'], $event['replyToken']);
                 $message = "Sorry, there's nothing to be remembered.";
             }
