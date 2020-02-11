@@ -29,4 +29,9 @@ class MemoryGateway
 
         return null;
     }
+
+    function removeMemory(string $tableName, int $index)
+    {
+        $memory = $this->db->table($tableName);
+    }
 }
