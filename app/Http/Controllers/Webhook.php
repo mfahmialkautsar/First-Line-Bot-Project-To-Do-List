@@ -70,20 +70,20 @@ class Webhook extends Controller
         $this->tableGateway = $tableGateway;
         $this->memoryGateway = $memoryGateway;
 
-        // creating bot object
+        // create bot object
         $httpClient = new CurlHTTPClient(getenv('CHANNEL_ACCESS_TOKEN'));
         $this->bot = new LINEBot($httpClient, ['channelSecret' => getenv('CHANNEL_SECRET')]);
     }
 
     public function __invoke()
     {
-        // getting request
+        // get request
         $body = $this->request->all();
 
-        // debugging data
+        // debug data
         $this->logger->debug('Body', $body);
 
-        // saving log
+        // save log
         $signature = $this->request->server('HTTP_X_LINE_SIGNATURE') ?: '-';
         $this->logGateway->saveLog($signature, json_encode($body, true));
 
@@ -96,16 +96,16 @@ class Webhook extends Controller
 
         if (is_array($data['events'])) {
             foreach ($data['events'] as $event) {
-                // skipping group and room event
+                // skip group and room event
                 if (!isset($event['source']['userId'])) continue;
 
-                // getting user data from database
+                // get user data from database
                 $this->user = $this->userGateway->getUser($event['source']['userId']);
 
                 // if user not registered
                 if (!$this->user) $this->followCallback($event);
                 else {
-                    // responding event
+                    // respond event
                     if ($event['type'] == 'message') {
                         if (method_exists($this, $event['message']['type'] . 'Message')) {
                             $this->{$event['message']['type'] . 'Message'}($event);
@@ -130,18 +130,18 @@ class Webhook extends Controller
         if ($res->isSucceeded()) {
             $profile = $res->getJSONDecodedBody();
 
-            // creating welcome message
+            // create welcome message
             $message = "Halo, " . $profile['displayName'] . "!";
             $textMessaegeBuilder = new TextMessageBuilder($message);
 
-            // merging all messages
+            // merge all messages
             $multiMessageBuilder = new MultiMessageBuilder();
             $multiMessageBuilder->add($textMessaegeBuilder);
 
-            // sending reply message
+            // send reply message
             $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
 
-            // saving user data
+            // save user data
             $this->userGateway->saveUser(
                 $profile['userId'],
                 $profile['displayName']
@@ -159,6 +159,12 @@ class Webhook extends Controller
         $words = preg_split("/[\s,]+/", $trim);
         $intent = $words[0];
 
+        // create the right words
+        if (isset($words[1])) {
+            array_splice($words, 0, 1);
+            $note = implode(" ", $words);
+        }
+
         // BETA TEST
         $res = $this->bot->getProfile($event['source']['userId']);
         if ($res->isSucceeded()) {
@@ -167,44 +173,48 @@ class Webhook extends Controller
                 $this->tableGateway->down($profile['userId']);
                 $message = "You have deleted all the memories";
             } else if (strtolower($intent) == "~remember") {
-                if (isset($words[1])) {
-                    $join = implode(" ", $words);
-                    $note = substr($join, strpos($join, $words[1]));
-                    $this->tableGateway->rememberThis($profile['userId'], $note);
-                    $message = "Ok, I remember that.";
+                if (isset($note) && $note) {
+                    $message = $this->tableGateway->rememberThis($profile['userId'], $note);
                 } else {
                     $message = "Sorry, what should I remember?\nUse \"~remember [your note]\"";
                 }
             } else if (strtolower($intent) == "~forget") {
                 # code...
             } else if (strtolower($intent) == "~show") {
-                $this->remembering($profile['userId'], $event['replyToken']);
+                $message = $this->remembering($profile['userId'], $event['replyToken']);
+            } else {
+                $message = "Sorry, I don't understand";
             }
 
+            if (!isset($message) && !$message) {
+                $message = "Sorry, there's something wrong";
+            }
             $textMessaegeBuilder = new TextMessageBuilder($message);
             $this->bot->replyMessage($event['replyToken'], $textMessaegeBuilder);
         }
     }
 
-    private function remembering($tableName, $replyToken)
+    private function remembering($tableName)
     {
-        $message = "Sorry, there's nothing to be remembered";
         $total = $this->tableGateway->count($tableName);
-        if ($total == $message) {
-            return $message;
-        } else {
+        if ($total != 0) {
             $list = array("Here's what you should remember:");
             for ($i = 0; $i < $total; $i++) {
                 $memory = $this->memoryGateway->getMemory($tableName, $i + 1);
                 array_push($list, $i + 1 . ". " . $memory['remember']);
             }
 
-            $message = new TextMessageBuilder(implode("\n", $list));
-
-            // send message
-            $response = $this->bot->replyMessage($replyToken, $message);
-            $messageBuilder = new TextMessageBuilder("failed");
-            $response = $this->bot->replyMessage($replyToken, $messageBuilder);
+            $theMessage = implode("\n", $list);
+        } else {
+            $theMessage = "Sorry, there's nothing to be remembered";
         }
+
+        return $theMessage;
+
+    }
+
+    private function forgetting($tableName, $replyToken, $index)
+    {
+        # code...
     }
 }

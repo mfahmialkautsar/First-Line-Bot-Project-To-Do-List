@@ -69,6 +69,7 @@ class TableGateway extends Migration
                 ->insert([
                     'remember' => $note
                 ]);
+                return "Ok, I remember that.";
             }
         } else {
             $this->up($tableName);
@@ -81,7 +82,7 @@ class TableGateway extends Migration
         if (Schema::hasTable($tableName)) {
             return $this->db->table($tableName)->count();
         } else {
-            return "Sorry, there's nothing to be remembered";
+            return 0;
         }
     }
 }
