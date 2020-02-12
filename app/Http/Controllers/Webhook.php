@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Gateway\EventLogGateway;
 use App\Gateway\MemoryGateway;
-use App\Gateway\TableGateway;
 use App\Gateway\UserGateway;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -41,10 +40,6 @@ class Webhook extends Controller
      */
     private $userGateway;
     /**
-     * @var TableGateway
-     */
-    private $tableGateway;
-    /**
      * @var MemoryGateway
      */
     private $memoryGateway;
@@ -59,7 +54,6 @@ class Webhook extends Controller
         Logger $logger,
         EventLogGateway $logGateway,
         UserGateway $userGateway,
-        TableGateway $tableGateway,
         MemoryGateway $memoryGateway
     ) {
         $this->request = $request;
@@ -67,7 +61,6 @@ class Webhook extends Controller
         $this->logger = $logger;
         $this->logGateway = $logGateway;
         $this->userGateway = $userGateway;
-        $this->tableGateway = $tableGateway;
         $this->memoryGateway = $memoryGateway;
 
         // create bot object
@@ -148,7 +141,7 @@ class Webhook extends Controller
             );
 
             // BETA TEST
-            $this->tableGateway->up($profile['userId']);
+            $this->memoryGateway->up($profile['userId']);
         }
     }
 
@@ -171,17 +164,17 @@ class Webhook extends Controller
         if ($res->isSucceeded()) {
             $profile = $res->getJSONDecodedBody();
             if (strtolower($intent) == '#~delete') {
-                $this->tableGateway->down($profile['userId']);
+                $this->memoryGateway->down($profile['userId']);
                 $message = "You have deleted all the memories";
-            } else if (strtolower($intent) == "~note") {
+            } else if (strtolower($intent) == ".note") {
                 if (isset($note) && $note) {
-                    $message = $this->tableGateway->rememberThis($profile['userId'], $note);
+                    $message = $this->memoryGateway->rememberThis($profile['userId'], $note);
                 } else {
                     $message = "What should I remember?\nUse \"~remember [your note]\"";
                 }
-            } else if (strtolower($intent) == "~forget") {
-                # code...
-            } else if (strtolower($intent) == "~show") {
+            } else if (strtolower($intent) == ".forget") {
+                $message = $this->memoryGateway->forgetMemory($profile['userId'], $note);
+            } else if (strtolower($intent) == ".show") {
                 $message = $this->remembering($profile['userId']);
             } else {
                 $message = "Sorry, I don't understand";
@@ -196,7 +189,7 @@ class Webhook extends Controller
 
     private function remembering($tableName)
     {
-        $total = $this->tableGateway->count($tableName);
+        $total = $this->memoryGateway->count($tableName);
         if ($total != 0) {
             $list = array("Here's what you should remember:");
             for ($i = 0; $i < $total; $i++) {
@@ -213,8 +206,8 @@ class Webhook extends Controller
 
     }
 
-    private function forgetting($tableName, $replyToken, $index)
+    private function forgetting($tableName, $id)
     {
-        # code...
+        $this->memoryGateway->forgetMemory($tableName, $id);
     }
 }
