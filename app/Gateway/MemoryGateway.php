@@ -109,7 +109,7 @@ class MemoryGateway extends Migration
     function getRowNumber($tableName)
     {
         $user = DB::table($tableName)
-        ->select(DB::raw('select *, row_number() over() as number'));
+        ->select(DB::raw("INSERT INTO $tableName (remmeber) values ('just');"));
         return $user;
     }
 }
