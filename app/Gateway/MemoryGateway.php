@@ -86,17 +86,15 @@ class MemoryGateway extends Migration
     // Memory
     function getMemory(string $tableName, int $id)
     {
-        if ($id) {
-            $memory = DB::table($tableName)
-            ->where('id', $id)
-            ->first();
-    
-            if ($memory) {
-                return (array) $memory;
-            }
-    
-            return null;
+        $memory = DB::table($tableName)
+        ->where('id', $id)
+        ->first();
+
+        if ($memory) {
+            return (array) $memory;
         }
+
+        return null;
     }
 
     function forgetMemory(string $tableName, int $id)
