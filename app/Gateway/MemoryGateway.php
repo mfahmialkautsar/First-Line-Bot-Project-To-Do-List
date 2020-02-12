@@ -86,8 +86,8 @@ class MemoryGateway extends Migration
     // Memory
     function getMemory(string $tableName, int $id)
     {
-        $memory = DB::table($tableName)
-        ->where('id', $id)
+        $memory = $this->getRowNumber($tableName)
+        ->where('number', $id)
         ->first();
 
         if ($memory) {
@@ -108,10 +108,8 @@ class MemoryGateway extends Migration
 
     function getRowNumber($tableName)
     {
-        DB::table($tableName)
-        ->select(DB::raw("CREATE TABLE LINK
-        (id serial PRIMARY KEY
-        );"));
-        // return $user;
+        $user = DB::table($tableName)
+        ->select('select *, row_number() over() as number');
+        return $user;
     }
 }
