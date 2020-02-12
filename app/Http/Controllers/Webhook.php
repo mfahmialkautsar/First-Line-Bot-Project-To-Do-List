@@ -170,7 +170,7 @@ class Webhook extends Controller
         $introduction = "Aku adalah bot yang bisa mengingat catatan kamu supaya kamu tidak pernah lupa.\nKamu cuma perlu tulis catatannya, kalo nanti butuh tinggal bilang.";
         
         // prepare help button
-        $helpButton[] = new MessageTemplateActionBuilder("How To Use", $this->help);
+        $helpButton[] = new MessageTemplateActionBuilder("How To Use", ".help");
 
         // prepare button template
         $buttonTemplate = new ButtonTemplateBuilder(null, $introduction, null, $helpButton);
