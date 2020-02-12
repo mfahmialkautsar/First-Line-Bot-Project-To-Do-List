@@ -94,9 +94,10 @@ class MemoryGateway extends Migration
 
         if ($memory) {
             return (array) $memory;
+        } else {
+            $id++;
+            $this->getMemory($tableName, $id);
         }
-
-        return null;
     }
 
     function forgetMemory(string $tableName, int $id)
