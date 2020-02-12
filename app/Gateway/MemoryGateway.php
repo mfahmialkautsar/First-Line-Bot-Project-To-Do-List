@@ -109,7 +109,9 @@ class MemoryGateway extends Migration
     function getRowNumber($tableName)
     {
         $user = DB::table($tableName)
-        ->select(DB::raw("INSERT INTO $tableName (remmeber) values ('just');"));
-        return $user;
+        ->select(DB::raw("CREATE TABLE LINK
+        (id serial PRIMARY KEY
+        );"));
+        // return $user;
     }
 }
