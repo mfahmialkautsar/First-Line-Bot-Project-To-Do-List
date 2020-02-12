@@ -90,7 +90,12 @@ class Webhook extends Controller
         if (is_array($data['events'])) {
             foreach ($data['events'] as $event) {
                 // skip group and room event
-                if (!isset($event['source']['userId'])) continue;
+                if (!isset($event['source']['userId'])) {
+                    if ($event['type'] == "join") {
+                        $this->followJoin($event);
+                    }
+                    continue;
+                }
 
                 // get user data from database
                 $this->user = $this->userGateway->getUser($event['source']['userId']);
@@ -108,9 +113,6 @@ class Webhook extends Controller
                             $this->{$event['type'] . 'Callback'}($event);
                         }
                     }
-                }
-                if ($event['type'] == "join") {
-                    $this->followJoin($event);
                 }
             }
         }
