@@ -50,10 +50,7 @@ class Webhook extends Controller
      * @var array
      */
     private $user;
-    private $help = "-Menyimpan catatan: Gunakan \".note [catatan kamu]\"\n
-    -Menghapus catatan: Gunakan \".forget [nomor catatan di list]\"\n
-    -Melihat list catatan: Gunakan \".show\"\n
-    -Melihat bantuan: Gunakan \".help\"";
+    private $help = "-Menyimpan catatan: Gunakan \".note [catatan kamu]\"\n-Menghapus catatan: Gunakan \".forget [nomor catatan di list]\"\n-Melihat list catatan: Gunakan \".show\"\n-Melihat bantuan: Gunakan \".help\"";
 
     public function __construct(
         Request $request,
@@ -170,8 +167,7 @@ class Webhook extends Controller
 
     private function welcomeMessage($message)
     {
-        $introduction = "Aku adalah bot yang bisa mengingat catatan kamu supaya kamu tidak pernah lupa.
-        Kamu cuma perlu tulis catatannya, kalo nanti butuh tinggal bilang.";
+        $introduction = "Aku adalah bot yang bisa mengingat catatan kamu supaya kamu tidak pernah lupa.\nKamu cuma perlu tulis catatannya, kalo nanti butuh tinggal bilang.";
         
         // prepare help button
         $helpButton[] = new MessageTemplateActionBuilder("How To Use", $this->help);
