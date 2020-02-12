@@ -86,9 +86,10 @@ class MemoryGateway extends Migration
     // Memory
     function getMemory(string $tableName, int $id)
     {
-        $memory = DB::select("SELECT *, row_number() OVER() AS NUMBER FROM \"$tableName\";")
-        ->where('id', $id)
-        ->first();
+        // $memory = DB::table($tableName)
+        // ->where('id', $id)
+        // ->first();
+        $memory = $this->getRowNumber($tableName, $id, "SELECT * ");
 
         if ($memory) {
             return (array) $memory;
@@ -99,17 +100,28 @@ class MemoryGateway extends Migration
 
     function forgetMemory(string $tableName, int $id)
     {
-        DB::table($tableName)
-        ->where('id', $id)
-        ->delete();
+        // DB::table($tableName)
+        // ->where('id', $id)
+        // ->delete();
 
+        $this->getRowNumber($tableName, $id, "DELETE");
         return "Forgetted";
     }
 
-    function getRowNumber($tableName)
+    function getRowNumber($tableName, $num, $option)
     {
-        $user = DB::table($tableName)
-        ->select(DB::raw('select *, row_number() over() as number'));
+        $user = DB::select("WITH temp AS
+        (
+        SELECT *, ROW_NUMBER() OVER(ORDER BY id) AS number
+        from \"$tableName\"
+        ), temp2 AS (
+        SELECT *
+        FROM temp
+        WHERE number = $num
+        )
+        $option FROM \"$tableName\"
+        WHERE id IN (SELECT id FROM temp2);
+        ");
         return $user;
     }
 }

@@ -178,7 +178,7 @@ class Webhook extends Controller
                 $message = $this->remembering($profile['userId']);
             } else {
                 $message = "Sorry, I don't understand";
-                $this->memoryGateway->getRowNumber($profile['userId']);
+                // $this->memoryGateway->getRowNumber($profile['userId']);
             }
 
         }
