@@ -199,8 +199,8 @@ class Webhook extends Controller
                     $total++;
                     continue;
                 }
-                $no++;
                 array_push($list, $no . ". " . $memory['remember']);
+                $no++;
             }
 
             $theMessage = implode("\n", $list);
