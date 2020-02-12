@@ -89,7 +89,8 @@ class MemoryGateway extends Migration
         // $memory = DB::table($tableName)
         // ->where('id', $id)
         // ->first();
-        $memory = $this->getRowNumber($tableName, $num, "SELECT remember");
+        // $memory = $this->getRowNumber($tableName, $num, "SELECT *");
+        $memory = DB::select("SELECT * FROM \"$tableName\" WHERE id = $num");
 
         if ($memory) {
             return (array) $memory;
