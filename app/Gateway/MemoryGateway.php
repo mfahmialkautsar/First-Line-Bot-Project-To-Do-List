@@ -31,6 +31,7 @@ class MemoryGateway extends Migration
 
         if (!Schema::hasTable($tableName)) {
             Schema::create($tableName, function (Blueprint $table) {
+                $table->integer('number');
                 $table->increments('id');
                 $table->string('remember');
                 $table->timestamps();
@@ -66,7 +67,8 @@ class MemoryGateway extends Migration
             DB::table($tableName)
                 ->insert([
                     'remember' => $note
-                ]);
+                ])
+                ->increment('number');
         } else {
             $this->up($tableName);
             $this->rememberThis($tableName, $note);
@@ -86,8 +88,8 @@ class MemoryGateway extends Migration
     // Memory
     function getMemory(string $tableName, int $id)
     {
-        $memory = $this->getRowNumber($tableName)
-        ->where('number', $id)
+        $memory = DB::table($tableName)
+        ->where('id', $id)
         ->first();
 
         if ($memory) {
@@ -109,7 +111,7 @@ class MemoryGateway extends Migration
     function getRowNumber($tableName)
     {
         $user = DB::table($tableName)
-        ->select('select *, row_number() over() as number');
+        ->select(DB::raw('select *, row_number() over() as number'));
         return $user;
     }
 }
