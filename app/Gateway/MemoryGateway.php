@@ -92,7 +92,7 @@ class MemoryGateway extends Migration
         $memory = $this->getRowNumber($tableName, $num, "SELECT remember");
 
         if ($memory) {
-            return (string) $memory;
+            return (array) $memory;
         }
 
         return null;
