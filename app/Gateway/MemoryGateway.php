@@ -92,9 +92,9 @@ class MemoryGateway extends Migration
         // $memory = DB::select("SELECT * FROM \"$tableName\" WHERE id = 2");
 
         if ($memory) {
-            // return (array) $memory;
-            return $memory = "test";
+            return (array) $memory;
         } else {
+            return "test";
             $id++;
             $this->getMemory($tableName, $id);
         }
