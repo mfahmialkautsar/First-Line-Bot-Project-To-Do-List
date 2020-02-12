@@ -31,7 +31,7 @@ class MemoryGateway extends Migration
 
         if (!Schema::hasTable($tableName)) {
             Schema::create($tableName, function (Blueprint $table) {
-                $table->integer('number');
+                $table->unsignedInteger('number');
                 $table->increments('id');
                 $table->string('remember');
                 $table->timestamps();
