@@ -178,7 +178,6 @@ class Webhook extends Controller
                 $message = $this->remembering($profile['userId']);
             } else {
                 $message = "Sorry, I don't understand";
-                // $this->memoryGateway->getRowNumber($profile['userId']);
             }
         }
 
@@ -192,6 +191,7 @@ class Webhook extends Controller
         $total = $this->memoryGateway->count($tableName);
         if ($total != 0) {
             $list = array("Here's what you should remember:");
+            $no = 1;
             for ($i = 0; $i < $total; $i++) {
                 $memory = $this->memoryGateway->getMemory($tableName, $i + 1);
 
@@ -199,7 +199,8 @@ class Webhook extends Controller
                     $total++;
                     continue;
                 }
-                array_push($list, $i + 1 . ". " . $memory['remember']);
+                $no++;
+                array_push($list, $no . ". " . $memory['remember']);
             }
 
             $theMessage = implode("\n", $list);
@@ -208,6 +209,5 @@ class Webhook extends Controller
         }
 
         return $theMessage;
-
     }
 }
