@@ -89,7 +89,7 @@ class MemoryGateway extends Migration
         // $memory = DB::table($tableName)
         // ->where('id', $id)
         // ->first();
-        $memory = $this->getRowNumber($tableName, $num, "SELECT * ");
+        $memory = DB::select("SELECT * FROM $tableName WHERE id = $num");
 
         if ($memory) {
             return (array) $memory;
@@ -117,7 +117,7 @@ class MemoryGateway extends Migration
         ), temp2 AS (
         SELECT *
         FROM temp
-        WHERE number = 1
+        WHERE number = $num
         )
         $option FROM \"$tableName\"
         WHERE id IN (SELECT id FROM temp2);
