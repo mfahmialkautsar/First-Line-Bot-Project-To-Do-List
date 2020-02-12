@@ -97,7 +97,7 @@ class MemoryGateway extends Migration
         } else {
             // return "null";
             $id++;
-            $this->getMemory($tableName, $id);
+            return $this->getMemory($tableName, $id);
         }
     }
 
