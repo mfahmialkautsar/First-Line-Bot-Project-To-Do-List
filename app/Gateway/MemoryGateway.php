@@ -87,7 +87,7 @@ class MemoryGateway extends Migration
     function getMemory(string $tableName, int $id)
     {
         $memory = DB::table($tableName)
-        ->where('id', $id)
+        ->where('rnum', $id)
         ->first();
 
         if ($memory) {
