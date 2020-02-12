@@ -11,7 +11,10 @@ use Illuminate\Log\Logger;
 use LINE\LINEBot;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 use LINE\LINEBot\MessageBuilder\MultiMessageBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
+use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
 
 class Webhook extends Controller
 {
@@ -47,6 +50,10 @@ class Webhook extends Controller
      * @var array
      */
     private $user;
+    private $help = "-Menyimpan catatan: Gunakan \".note [catatan kamu]\"\n
+    -Menghapus catatan: Gunakan \".forget [nomor catatan di list]\"\n
+    -Melihat list catatan: Gunakan \".show\"\n
+    -Melihat bantuan: Gunakan \".help\"";
 
     public function __construct(
         Request $request,
@@ -92,7 +99,7 @@ class Webhook extends Controller
                 // skip group and room event
                 if (!isset($event['source']['userId'])) {
                     if ($event['type'] == "join") {
-                        $this->followJoin($event);
+                        $this->joinCallback($event);
                     }
                     continue;
                 }
@@ -130,14 +137,9 @@ class Webhook extends Controller
 
             // create welcome message
             $message = "Halo, " . $profile['displayName'] . "!";
-            $textMessaegeBuilder = new TextMessageBuilder($message);
-
-            // merge all messages
-            $multiMessageBuilder = new MultiMessageBuilder();
-            $multiMessageBuilder->add($textMessaegeBuilder);
 
             // send reply message
-            $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+            $this->bot->replyMessage($event['replyToken'], $this->welcomeMessage($message));
 
             // save user data
             $this->userGateway->saveUser(
@@ -150,18 +152,42 @@ class Webhook extends Controller
         }
     }
 
-    private function followJoin($event)
+    private function joinCallback($event)
     {
         // create welcome message
         $message = "Hai " . "Gaes!";
-        $textMessaegeBuilder = new TextMessageBuilder($message);
+        // $haloMessage = new TextMessageBuilder($message);
+        // $textMessaegeBuilder2 = new TextMessageBuilder($this->introduction);
+
+        // // merge all messages
+        // $multiMessageBuilder = new MultiMessageBuilder();
+        // $multiMessageBuilder->add($haloMessage);
+        // $multiMessageBuilder->add($textMessaegeBuilder2);
+
+        // send reply message
+        $this->bot->replyMessage($event['replyToken'], $this->welcomeMessage($message));
+    }
+
+    private function welcomeMessage($message)
+    {
+        $introduction = "Aku adalah bot yang bisa mengingat catatan kamu supaya kamu tidak pernah lupa.
+        Kamu cuma perlu tulis catatannya, kalo nanti butuh tinggal bilang.";
+        
+        // prepare help button
+        $helpButton[] = new MessageTemplateActionBuilder("How To Use", $this->help);
+
+        // prepare button template
+        $buttonTemplate = new ButtonTemplateBuilder(null, $this->introduction, null, $helpButton);
+
+        // build message
+        $haloMessage = new TextMessageBuilder($message);
+        $introductionMessage = new TemplateMessageBuilder($message, $buttonTemplate);
 
         // merge all messages
         $multiMessageBuilder = new MultiMessageBuilder();
-        $multiMessageBuilder->add($textMessaegeBuilder);
-
-        // send reply message
-        $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+        $multiMessageBuilder->add($haloMessage);
+        $multiMessageBuilder->add($introductionMessage);
+        return $multiMessageBuilder;
     }
 
     private function textMessage($event)
@@ -183,10 +209,11 @@ class Webhook extends Controller
         $res = $this->bot->getProfile($event['source']['userId']);
         if ($res->isSucceeded()) {
             $profile = $res->getJSONDecodedBody();
-            if (strtolower($intent) == '#~delete') {
-                $this->memoryGateway->down($profile['userId']);
-                $message = "You have deleted all the memories";
-            } else if (strtolower($intent) == ".note") {
+            // if (strtolower($intent) == '#~delete') {
+            //     $this->memoryGateway->down($profile['userId']);
+            //     $message = "You have deleted all the memories";
+            // } else 
+            if (strtolower($intent) == ".note") {
                 if (isset($note) && $note) {
                     $message = $this->memoryGateway->rememberThis($profile['userId'], $note);
                 } else {
@@ -200,6 +227,8 @@ class Webhook extends Controller
                 }
             } else if (strtolower($intent) == ".show") {
                 $message = $this->remembering($profile['userId']);
+            } else if (strtolower($intent) == ".help") {
+                $message = $this->help;
             } else {
                 if ($source == "user") {
                     $message = "Sorry, I don't understand";
@@ -210,8 +239,8 @@ class Webhook extends Controller
         }
 
         // send response
-        $textMessaegeBuilder = new TextMessageBuilder($message);
-        $this->bot->replyMessage($event['replyToken'], $textMessaegeBuilder);
+        $haloMessage = new TextMessageBuilder($message);
+        $this->bot->replyMessage($event['replyToken'], $haloMessage);
     }
 
     private function remembering($tableName)
