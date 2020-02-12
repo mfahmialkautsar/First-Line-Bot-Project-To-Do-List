@@ -109,6 +109,9 @@ class Webhook extends Controller
                         }
                     }
                 }
+                if ($event['type'] == "join") {
+                    $this->followJoin($event);
+                }
             }
         }
 
@@ -143,19 +146,20 @@ class Webhook extends Controller
             // BETA TEST
             $this->memoryGateway->up($profile['userId']);
         }
+    }
 
-        if ($event['type'] == "join") {
-            // create welcome message
-            $message = "Hi " . "Gae!";
-            $textMessaegeBuilder = new TextMessageBuilder($message);
+    private function followJoin($event)
+    {
+        // create welcome message
+        $message = "Hi " . "Gae!";
+        $textMessaegeBuilder = new TextMessageBuilder($message);
 
-            // merge all messages
-            $multiMessageBuilder = new MultiMessageBuilder();
-            $multiMessageBuilder->add($textMessaegeBuilder);
+        // merge all messages
+        $multiMessageBuilder = new MultiMessageBuilder();
+        $multiMessageBuilder->add($textMessaegeBuilder);
 
-            // send reply message
-            $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
-        }
+        // send reply message
+        $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
     }
 
     private function textMessage($event)
