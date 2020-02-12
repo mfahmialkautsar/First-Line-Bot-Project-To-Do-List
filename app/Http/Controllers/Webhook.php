@@ -153,7 +153,7 @@ class Webhook extends Controller
     private function followJoin($event)
     {
         // create welcome message
-        $message = "Hi " . "Gae!";
+        $message = "Hai " . "Gaes!";
         $textMessaegeBuilder = new TextMessageBuilder($message);
 
         // merge all messages
@@ -193,7 +193,11 @@ class Webhook extends Controller
                     $message = "What should I remember?\nUse \".note [your note]\"";
                 }
             } else if (strtolower($intent) == ".forget") {
-                $message = $this->memoryGateway->forgetMemory($profile['userId'], $note);
+                if (isset($note) && $note) {
+                    $message = $this->memoryGateway->forgetMemory($profile['userId'], $note);
+                } else {
+                    $message = "What should I forget?\nUse \".forget [note number]\"";
+                }
             } else if (strtolower($intent) == ".show") {
                 $message = $this->remembering($profile['userId']);
             } else {
