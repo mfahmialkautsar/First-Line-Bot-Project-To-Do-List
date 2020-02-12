@@ -86,7 +86,7 @@ class MemoryGateway extends Migration
     // Memory
     function getMemory(string $tableName, int $id)
     {
-        $memory = DB::select("SELECT *, row_number() OVER() AS NUMBER FROM $tableName;")
+        $memory = DB::select("SELECT *, row_number() OVER() AS NUMBER FROM \"$tableName\";")
         ->where('id', $id)
         ->first();
 
