@@ -86,8 +86,8 @@ class MemoryGateway extends Migration
     // Memory
     function getMemory(string $tableName, int $id)
     {
-        $memory = $this->getRowNumber($tableName)
-        ->where('number', $id)
+        $memory = DB::table($tableName)
+        ->where('id', $id)
         ->first();
 
         if ($memory) {
@@ -106,7 +106,7 @@ class MemoryGateway extends Migration
         return "Forgetted";
     }
 
-    private function getRowNumber($tableName)
+    function getRowNumber($tableName)
     {
         $user = DB::table($tableName)
         ->select(DB::raw('select *, row_number() over() as number'));
