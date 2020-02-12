@@ -193,7 +193,7 @@ class Webhook extends Controller
         if ($total != 0) {
             $list = array("Here's what you should remember:");
             for ($i = 0; $i < $total; $i++) {
-                // $memory = $this->memoryGateway->getMemory($tableName, $i + 1);
+                $memory = $this->memoryGateway->getMemory($tableName, $i + 1);
                 array_push($list, $i + 1 . ". ");
             }
 
