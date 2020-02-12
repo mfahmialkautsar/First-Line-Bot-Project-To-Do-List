@@ -78,17 +78,16 @@ class MemoryGateway extends Migration
     {
         if (Schema::hasTable($tableName)) {
             return DB::table($tableName)->count();
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     // Memory
     function getMemory(string $tableName, int $id)
     {
         $memory = DB::table($tableName)
-        ->where('id', $id)
-        ->first();
+            ->where('id', $id)
+            ->first();
         //$memory = $this->getRowNumber($tableName, $num, "SELECT *");
         // $memory = DB::select("SELECT * FROM \"$tableName\" WHERE id = 2");
 
