@@ -119,12 +119,17 @@ class Webhook extends Controller
 
     private function followCallback($event)
     {
+        $source = $event['source']['type'];
         $res = $this->bot->getProfile($event['source']['userId']);
         if ($res->isSucceeded()) {
             $profile = $res->getJSONDecodedBody();
 
             // create welcome message
-            $message = "Halo, " . $profile['displayName'] . "!";
+            if ($source == "user") {
+                $message = "Halo, " . $profile['displayName'] . "!";
+            } else {
+                $message = "Hai Guys.";
+            }
             $textMessaegeBuilder = new TextMessageBuilder($message);
 
             // merge all messages
@@ -160,6 +165,7 @@ class Webhook extends Controller
         }
 
         // BETA TEST
+        $source = $event['source']['type'];
         $res = $this->bot->getProfile($event['source']['userId']);
         if ($res->isSucceeded()) {
             $profile = $res->getJSONDecodedBody();
@@ -177,7 +183,11 @@ class Webhook extends Controller
             } else if (strtolower($intent) == ".show") {
                 $message = $this->remembering($profile['userId']);
             } else {
-                $message = "Sorry, I don't understand";
+                if ($source == "user") {
+                    $message = "Sorry, I don't understand";
+                } else {
+                    return;
+                }
             }
         }
 

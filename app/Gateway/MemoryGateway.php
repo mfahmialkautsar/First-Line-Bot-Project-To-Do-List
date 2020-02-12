@@ -27,8 +27,6 @@ class MemoryGateway extends Migration
      */
     public function up(string $tableName)
     {
-        // $user = $this->db->table($tableName);
-
         if (!Schema::hasTable($tableName)) {
             Schema::create($tableName, function (Blueprint $table) {
                 $table->increments('id');
@@ -53,11 +51,7 @@ class MemoryGateway extends Migration
      */
     public function down(string $tableName)
     {
-        // $user = $this->db->table($tableName);
-        // if ($user) {
         Schema::dropIfExists($tableName);
-        // $this->db->select("DROP TABLE IF EXISTS $tableName;");
-        // }
     }
 
     public function rememberThis($tableName, $note)
@@ -88,8 +82,6 @@ class MemoryGateway extends Migration
         $memory = DB::table($tableName)
             ->where('id', $id)
             ->first();
-        //$memory = $this->getRowNumber($tableName, $num, "SELECT *");
-        // $memory = DB::select("SELECT * FROM \"$tableName\" WHERE id = 2");
 
         if ($memory) {
             return (array) $memory;
@@ -108,7 +100,7 @@ class MemoryGateway extends Migration
         return "Forgetted";
     }
 
-    function getRowNumber($tableName, $num, $option)
+    private function getRowNumber($tableName, $num, $option)
     {
         $user = DB::select("WITH temp AS
         (
