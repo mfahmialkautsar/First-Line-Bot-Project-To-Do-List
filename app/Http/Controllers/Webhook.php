@@ -214,14 +214,14 @@ class Webhook extends Controller
             // } else 
             if (strtolower($intent) == ".note") {
                 if (isset($note) && $note) {
-                    $reply = "Catatan Tersimpan $this->emojiBuilder('100041')";
+                    $reply = "Catatan Tersimpan " . $this->emojiBuilder('100041');
                     $message =$this->memoryGateway->rememberThis($profile['userId'], $note, $reply);
                 } else {
                     $message = "What should I remember?\nUse \".note [your note]\"";
                 }
             } else if (strtolower($intent) == ".del") {
                 if (isset($note) && $note) {
-                    $reply = "Catatan Dihapus $this->emojiBuilder('10008F')";
+                    $reply = "Catatan Dihapus " . $this->emojiBuilder('10008F');
                     $message = $this->memoryGateway->forgetMemory($profile['userId'], $note, $reply);
                 } else {
                     $message = "What should I forget?\nUse \".forget [note number]\"";
