@@ -52,6 +52,8 @@ class Webhook extends Controller
      */
     private $user;
     private $help = "\tHow To Use\n\n‣Untuk menyimpan note: Gunakan \".new [note kamu]\"\n‣Untuk menghapus note: Gunakan \".del [nomor note]\"\n‣Untuk melihat list note: Gunakan \".show\"\n‣Untuk melihat bantuan: Gunakan \".help\"";
+    private $groupText = "Grup";
+    private $multiChat = "Multi Chat";
 
     public function __construct(
         Request $request,
@@ -152,8 +154,28 @@ class Webhook extends Controller
 
     private function joinCallback($event)
     {
+        $source = $event['source']['type'];
+        $res = $this->bot->getProfile($event['source']['userId']);
+
+        $groupId = $event['source']['groupId'];
+        $roomId = $event['source']['groupId'];
+
         // create welcome message
         $message = "Hai " . "Gaes!";
+
+
+        if ($source == "room") {
+            // save room data
+            $this->userGateway->saveRoom(
+                $groupId
+            );
+        } else if ($source == "group") {
+            // save group data
+            $this->userGateway->saveGroup(
+                $roomId
+            );
+        }
+
         // $haloMessage = new TextMessageBuilder($message);
         // $textMessaegeBuilder2 = new TextMessageBuilder($this->introduction);
 
@@ -168,7 +190,7 @@ class Webhook extends Controller
 
     private function welcomeMessage($message)
     {
-        $introduction = "Aku adalah bot yang akan membantu mengingat To-Do List kamu supaya kamu tidak lupa.";
+        $introduction = "Aku adalah bot yang akan membantu mengingat To-Do List kamu, multichat kamu, dan juga grup kamu supaya kamu tidak lupa.";
         $stickerMessageBuilder = new StickerMessageBuilder(11538, 51626494);
 
         // prepare help button
@@ -213,7 +235,7 @@ class Webhook extends Controller
         $profile = $res->getJSONDecodedBody();
         $userId = $profile['userId'];
         $groupId = $event['source']['groupId'];
-        $roomId = $event['source']['groupId'];
+        $roomId = $event['source']['roomId'];
 
         if ($res->isSucceeded()) {
             $tableName = null;
