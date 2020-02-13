@@ -266,39 +266,41 @@ class Webhook extends Controller
                 }
             }
 
-            // if (strtolower($intent) == '#~delete') {
-            //     $this->memoryGateway->down($profile['userId']);
-            //     $message = "You have deleted all the memories";
-            // } else 
-            if (strtolower($intent) == ".new") {
-                if (isset($note) && $note) {
-                    $reply = "Note Tersimpan " . $this->emojiBuilder('100041');
-                    $message = $this->memoryGateway->rememberThis($tableName, $note, $reply);
+            if ($tableName) {
+                // if (strtolower($intent) == '#~delete') {
+                //     $this->memoryGateway->down($profile['userId']);
+                //     $message = "You have deleted all the memories";
+                // } else 
+                if (strtolower($intent) == ".new") {
+                    if (isset($note) && $note) {
+                        $reply = "Note Tersimpan " . $this->emojiBuilder('100041');
+                        $message = $this->memoryGateway->rememberThis($tableName, $note, $reply);
+                    } else {
+                        $message = "Kamu mau buat note apa?\nKetik \".new [note kamu]\" ya!";
+                    }
+                } else if (strtolower($intent) == ".del") {
+                    if (isset($note) && $note) {
+                        $reply = "Note Dihapus " . $this->emojiBuilder('10008F');
+                        $message = $this->memoryGateway->forgetMemory($tableName, $note, $reply);
+                    } else {
+                        $message = "Note apa yang mau dihapus?\nKetik \".del [nomor note]\" ya!";
+                    }
+                } else if (strtolower($intent) == ".show") {
+                    $message = $this->remembering($tableName);
+                    if (isset($note) && $note) {
+                        $additionalMessage = new TextMessageBuilder("Cukup ketik \".show\" aja buat menampilkan To-Do List ya.");
+                    }
+                } else if (strtolower($intent) == ".help") {
+                    $message = $this->help;
+                    if (isset($note) && $note) {
+                        $additionalMessage = new TextMessageBuilder("Cukup ketik \".help\" aja buat menampilkan bantuan ya.");
+                    }
                 } else {
-                    $message = "Kamu mau buat note apa?\nKetik \".new [note kamu]\" ya!";
-                }
-            } else if (strtolower($intent) == ".del") {
-                if (isset($note) && $note) {
-                    $reply = "Note Dihapus " . $this->emojiBuilder('10008F');
-                    $message = $this->memoryGateway->forgetMemory($tableName, $note, $reply);
-                } else {
-                    $message = "Note apa yang mau dihapus?\nKetik \".del [nomor note]\" ya!";
-                }
-            } else if (strtolower($intent) == ".show") {
-                $message = $this->remembering($tableName);
-                if (isset($note) && $note) {
-                    $additionalMessage = new TextMessageBuilder("Cukup ketik \".show\" aja buat menampilkan To-Do List ya.");
-                }
-            } else if (strtolower($intent) == ".help") {
-                $message = $this->help;
-                if (isset($note) && $note) {
-                    $additionalMessage = new TextMessageBuilder("Cukup ketik \".help\" aja buat menampilkan bantuan ya.");
-                }
-            } else {
-                if ($source == "user") {
-                    $message = "Aku belum mengerti maksud kamu nih " . $this->emojiBuilder('100084') . "\nKetik \".help\" untuk bantuan.";
-                } else {
-                    return;
+                    if ($source == "user") {
+                        $message = "Aku belum mengerti maksud kamu nih " . $this->emojiBuilder('100084') . "\nKetik \".help\" untuk bantuan.";
+                    } else {
+                        return;
+                    }
                 }
             }
         } else {
