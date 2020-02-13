@@ -209,11 +209,15 @@ class Webhook extends Controller
 
         // if bot needs to leave
         if (strtolower($text) == "bot leave") {
-            $message = "bye ges";
-            if ($source == "room") {
-                $this->bot->leaveRoom($event['source']['roomId']);
-            } else if ($source == "group") {
-                $this->bot->leaveGroup($event['source']['groupId']);
+            if ($source != "user") {
+                $message = "bye ges " . $this->emojiBuilder('10007C');
+                $textMessageBuilder = new TextMessageBuilder($message);
+                $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+                if ($source == "room") {
+                    $this->bot->leaveRoom($event['source']['roomId']);
+                } else if ($source == "group") {
+                    $this->bot->leaveGroup($event['source']['groupId']);
+                }
             }
         }
 
