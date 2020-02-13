@@ -65,7 +65,10 @@ class MemoryGateway extends Migration
             $this->up($tableName);
             $this->rememberThis($tableName, $note);
         }
-        return "Noted " . strval(chr(intval(0x10008F)));
+        $code = '10008F';
+        $bin = hex2bin(str_repeat('0', 8 - strlen($code)) . $code);
+        $emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
+        return "Noted $emoji";
     }
 
     public function count(string $tableName)
