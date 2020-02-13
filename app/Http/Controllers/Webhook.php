@@ -198,6 +198,7 @@ class Webhook extends Controller
         $intent = $words[0];
 
         $multiMessageBuilder = new MultiMessageBuilder();
+        $additionalMessage = null;
 
         // create the right words
         if (isset($words[1])) {
@@ -246,14 +247,12 @@ class Webhook extends Controller
             } else if (strtolower($intent) == ".show") {
                 $message = $this->remembering($profile['userId']);
                 if (isset($note) && $note) {
-                    $additionalMessage = new TextMessageBuilder("Cukup ketik \".show\" aja buat menampilkan To-Do List.");
-                    $multiMessageBuilder->add($additionalMessage);
+                    $additionalMessage = new TextMessageBuilder("Cukup ketik \".show\" aja buat menampilkan To-Do List ya.");
                 }
             } else if (strtolower($intent) == ".help") {
                 $message = $this->help;
                 if (isset($note) && $note) {
-                    $additionalMessage = new TextMessageBuilder("Cukup ketik \".help\" aja buat menampilkan bantuan.");
-                    $multiMessageBuilder->add($additionalMessage);
+                    $additionalMessage = new TextMessageBuilder("Cukup ketik \".help\" aja buat menampilkan bantuan ya.");
                 }
             } else {
                 if ($source == "user") {
@@ -262,6 +261,10 @@ class Webhook extends Controller
                     return;
                 }
             }
+        }
+
+        if ($additionalMessage) {
+            $multiMessageBuilder->add($additionalMessage);
         }
 
         // send response
