@@ -94,9 +94,11 @@ class Webhook extends Controller
 
         if (is_array($data['events'])) {
             foreach ($data['events'] as $event) {
-
-                // skip group and room event
+                // handlegroup and room event
                 if (!isset($event['source']['userId'])) {
+                    if ($event['type'] == "join") {
+                        $this->joinCallback($event);
+                    }
                     continue;
                 }
 
@@ -120,10 +122,6 @@ class Webhook extends Controller
             }
         }
 
-        // handle group and room event
-        if ($event['type'] == "join") {
-            $this->joinCallback($event);
-        }
         $this->response->setContent("No event found!");
         $this->response->setStatusCode(200);
         return $this->response;
@@ -165,7 +163,7 @@ class Webhook extends Controller
         // $multiMessageBuilder->add($textMessaegeBuilder2);
 
         // send reply message
-        $response = $this->bot->replyMessage($event['replyToken'], $this->welcomeMessage($message));
+        $this->bot->replyMessage($event['replyToken'], $this->welcomeMessage($message));
     }
 
     private function welcomeMessage($message)
@@ -177,7 +175,7 @@ class Webhook extends Controller
         $helpButton[] = new MessageTemplateActionBuilder("How To Use", ".help");
 
         // prepare button template
-        $buttonTemplate = new ButtonTemplateBuilder(null, $introduction, "https://banner2.cleanpng.com/20180228/kyq/kisspng-notebook-paper-laptop-vector-open-notebook-creative-5a970968a33969.1636007615198477846686.jpg", $helpButton);
+        $buttonTemplate = new ButtonTemplateBuilder(null, $introduction, 'https://banner2.cleanpng.com/20180228/kyq/kisspng-notebook-paper-laptop-vector-open-notebook-creative-5a970968a33969.1636007615198477846686.jpg', $helpButton);
 
         // build message
         $haloMessage = new TextMessageBuilder($message);
