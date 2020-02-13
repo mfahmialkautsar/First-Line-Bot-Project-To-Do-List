@@ -175,7 +175,7 @@ class Webhook extends Controller
         $helpButton[] = new MessageTemplateActionBuilder("How To Use", ".help");
 
         // prepare button template
-        $buttonTemplate = new ButtonTemplateBuilder(null, $introduction, 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRQTogN4cZF1QsFQJx29w4X27A8cJNliKDDRTrlv45qjDdCimao', $helpButton);
+        $buttonTemplate = new ButtonTemplateBuilder(null, $introduction, 'https://image.freepik.com/free-vector/giant-check-list_23-2148085574.jpg', $helpButton);
 
         // build message
         $haloMessage = new TextMessageBuilder($message);
