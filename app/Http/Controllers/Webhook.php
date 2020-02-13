@@ -51,7 +51,7 @@ class Webhook extends Controller
      * @var array
      */
     private $user;
-    private $help = "\tHow To Use\n\n\fUntuk menyimpan catatan: Gunakan \".note [catatan kamu]\"\n\fUntuk menghapus catatan: Gunakan \".forget [nomor catatan di list]\"\n\fUntuk melihat list catatan: Gunakan \".show\"\n\fUntuk melihat bantuan: Gunakan \".help\"";
+    private $help = "\tHow To Use\n\n\fUntuk menyimpan catatan: Gunakan \".note [catatan kamu]\"\n\fUntuk menghapus catatan: Gunakan \".del [nomor catatan]\"\n\fUntuk melihat list catatan: Gunakan \".show\"\n\fUntuk melihat bantuan: Gunakan \".help\"";
 
     public function __construct(
         Request $request,
@@ -214,13 +214,15 @@ class Webhook extends Controller
             // } else 
             if (strtolower($intent) == ".note") {
                 if (isset($note) && $note) {
-                    $message = $this->memoryGateway->rememberThis($profile['userId'], $note);
+                    $reply = "Catatan Tersimpan $this->emojiBuilder('100041')";
+                    $message =$this->memoryGateway->rememberThis($profile['userId'], $note, $reply);
                 } else {
                     $message = "What should I remember?\nUse \".note [your note]\"";
                 }
-            } else if (strtolower($intent) == ".forget") {
+            } else if (strtolower($intent) == ".del") {
                 if (isset($note) && $note) {
-                    $message = $this->memoryGateway->forgetMemory($profile['userId'], $note);
+                    $reply = "Catatan Dihapus $this->emojiBuilder('10008F')";
+                    $message = $this->memoryGateway->forgetMemory($profile['userId'], $note, $reply);
                 } else {
                     $message = "What should I forget?\nUse \".forget [note number]\"";
                 }
@@ -265,5 +267,11 @@ class Webhook extends Controller
         }
 
         return $theMessage;
+    }
+
+    private function emojiBuilder($code)
+    {        
+        $bin = hex2bin(str_repeat('0', 8 - strlen($code)) . $code);
+        return mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
     }
 }

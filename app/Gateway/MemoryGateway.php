@@ -54,7 +54,7 @@ class MemoryGateway extends Migration
         Schema::dropIfExists($tableName);
     }
 
-    public function rememberThis($tableName, $note)
+    public function rememberThis($tableName, $note, $message)
     {
         if (Schema::hasTable($tableName)) {
             DB::table($tableName)
@@ -63,12 +63,10 @@ class MemoryGateway extends Migration
                 ]);
         } else {
             $this->up($tableName);
-            $this->rememberThis($tableName, $note);
+            $this->rememberThis($tableName, $note, $message);
         }
-        $code = '10008F';
-        $bin = hex2bin(str_repeat('0', 8 - strlen($code)) . $code);
-        $emoji = mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
-        return "Noted $emoji";
+
+        return $message;
     }
 
     public function count(string $tableName)
@@ -93,14 +91,14 @@ class MemoryGateway extends Migration
         return null;
     }
 
-    function forgetMemory(string $tableName, int $id)
+    function forgetMemory(string $tableName, int $id, $message)
     {
         // DB::table($tableName)
         // ->where('id', $id)
         // ->delete();
 
         $this->getRowNumber($tableName, $id, "DELETE");
-        return "Forgetted";
+        return $message;
     }
 
     private function getRowNumber($tableName, $num, $option)
