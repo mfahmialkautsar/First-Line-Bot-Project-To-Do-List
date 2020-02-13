@@ -51,7 +51,7 @@ class Webhook extends Controller
      * @var array
      */
     private $user;
-    private $help = "\tHow To Use\n\n\fUntuk menyimpan catatan: Gunakan \".note [catatan kamu]\"\n\fUntuk menghapus catatan: Gunakan \".del [nomor catatan]\"\n\fUntuk melihat list catatan: Gunakan \".show\"\n\fUntuk melihat bantuan: Gunakan \".help\"";
+    private $help = "\tHow To Use\n\n‣Untuk menyimpan note: Gunakan \".new [note kamu]\"\n‣Untuk menghapus note: Gunakan \".del [nomor note]\"\n‣Untuk melihat list note: Gunakan \".show\"\n‣Untuk melihat bantuan: Gunakan \".help\"";
 
     public function __construct(
         Request $request,
@@ -168,14 +168,14 @@ class Webhook extends Controller
 
     private function welcomeMessage($message)
     {
-        $introduction = "Aku adalah bot yang bisa mengingat catatan kamu supaya kamu tidak lupa.";
+        $introduction = "Aku adalah bot yang akan membantu mengingat To-Do List kamu supaya kamu tidak lupa.";
         $stickerMessageBuilder = new StickerMessageBuilder(11538, 51626494);
 
         // prepare help button
         $helpButton[] = new MessageTemplateActionBuilder("How To Use", ".help");
 
         // prepare button template
-        $buttonTemplate = new ButtonTemplateBuilder(null, $introduction, null, $helpButton);
+        $buttonTemplate = new ButtonTemplateBuilder(null, $introduction, "https://banner2.cleanpng.com/20180228/kyq/kisspng-notebook-paper-laptop-vector-open-notebook-creative-5a970968a33969.1636007615198477846686.jpg", $helpButton);
 
         // build message
         $haloMessage = new TextMessageBuilder($message);
@@ -191,7 +191,7 @@ class Webhook extends Controller
 
     private function textMessage($event)
     {
-        $message = "Sorry, there's something wrong";
+        $message = "Ups, ada yang salah.";
         $text = $event['message']['text'];
         $trim = trim($text);
         $words = preg_split("/[\s,]+/", $trim);
@@ -206,25 +206,36 @@ class Webhook extends Controller
         // BETA TEST
         $source = $event['source']['type'];
         $res = $this->bot->getProfile($event['source']['userId']);
+
+        // if bot needs to leave
+        if (strtolower($text) == "bot leave") {
+            $message = "bye ges";
+            if ($source == "room") {
+                $this->bot->leaveRoom($event['source']['roomId']);
+            } else if ($source == "group") {
+                $this->bot->leaveGroup($event['source']['groupId']);
+            }
+        }
+
         if ($res->isSucceeded()) {
             $profile = $res->getJSONDecodedBody();
             // if (strtolower($intent) == '#~delete') {
             //     $this->memoryGateway->down($profile['userId']);
             //     $message = "You have deleted all the memories";
             // } else 
-            if (strtolower($intent) == ".note") {
+            if (strtolower($intent) == ".new") {
                 if (isset($note) && $note) {
-                    $reply = "Catatan Tersimpan " . $this->emojiBuilder('100041');
-                    $message =$this->memoryGateway->rememberThis($profile['userId'], $note, $reply);
+                    $reply = "Note Tersimpan " . $this->emojiBuilder('100041');
+                    $message = $this->memoryGateway->rememberThis($profile['userId'], $note, $reply);
                 } else {
-                    $message = "What should I remember?\nUse \".note [your note]\"";
+                    $message = "Kamu mau buat note apa?\nKetik \".new [note kamu]\" ya!";
                 }
             } else if (strtolower($intent) == ".del") {
                 if (isset($note) && $note) {
-                    $reply = "Catatan Dihapus " . $this->emojiBuilder('10008F');
+                    $reply = "Note Dihapus " . $this->emojiBuilder('10008F');
                     $message = $this->memoryGateway->forgetMemory($profile['userId'], $note, $reply);
                 } else {
-                    $message = "What should I forget?\nUse \".forget [note number]\"";
+                    $message = "Note apa yang mau dihapus?\nKetik \".del [nomor note]\" ya!";
                 }
             } else if (strtolower($intent) == ".show") {
                 $message = $this->remembering($profile['userId']);
@@ -232,7 +243,7 @@ class Webhook extends Controller
                 $message = $this->help;
             } else {
                 if ($source == "user") {
-                    $message = "Sorry, I don't understand";
+                    $message = "Aku belum mengerti maksud kamu nih " . $this->emojiBuilder('100084') . "\nKetik \".help\" untuk bantuan.";
                 } else {
                     return;
                 }
@@ -240,15 +251,16 @@ class Webhook extends Controller
         }
 
         // send response
-        $haloMessage = new TextMessageBuilder($message);
-        $this->bot->replyMessage($event['replyToken'], $haloMessage);
+        $textMessageBuilder = new TextMessageBuilder($message);
+        $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
     }
 
     private function remembering($tableName)
     {
         $total = $this->memoryGateway->count($tableName);
         if ($total != 0) {
-            $list = array("Here's what you should remember:");
+            $emoji = $this->emojiBuilder('10006C');
+            $list = array("$emoji To-Do List:");
             $no = 1;
             for ($i = 0; $i < $total; $i++) {
                 $memory = $this->memoryGateway->getMemory($tableName, $i + 1);
@@ -263,14 +275,14 @@ class Webhook extends Controller
 
             $theMessage = implode("\n", $list);
         } else {
-            $theMessage = "There's nothing to be remembered";
+            $theMessage = "Yeay. Tidak ada tugas yang harus dikerjakan.";
         }
 
         return $theMessage;
     }
 
     private function emojiBuilder($code)
-    {        
+    {
         $bin = hex2bin(str_repeat('0', 8 - strlen($code)) . $code);
         return mb_convert_encoding($bin, 'UTF-8', 'UTF-32BE');
     }
