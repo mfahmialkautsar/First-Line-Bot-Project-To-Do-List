@@ -197,6 +197,8 @@ class Webhook extends Controller
         $words = preg_split("/[\s,]+/", $trim);
         $intent = $words[0];
 
+        $multiMessageBuilder = new MultiMessageBuilder();
+
         // create the right words
         if (isset($words[1])) {
             array_splice($words, 0, 1);
@@ -243,8 +245,16 @@ class Webhook extends Controller
                 }
             } else if (strtolower($intent) == ".show") {
                 $message = $this->remembering($profile['userId']);
+                if (isset($note) && $note) {
+                    $additionalMessage = new TextMessageBuilder("Cukup ketik \".show\" aja buat menampilkan To-Do List.");
+                    $multiMessageBuilder->add($additionalMessage);
+                }
             } else if (strtolower($intent) == ".help") {
                 $message = $this->help;
+                if (isset($note) && $note) {
+                    $additionalMessage = new TextMessageBuilder("Cukup ketik \".help\" aja buat menampilkan bantuan.");
+                    $multiMessageBuilder->add($additionalMessage);
+                }
             } else {
                 if ($source == "user") {
                     $message = "Aku belum mengerti maksud kamu nih " . $this->emojiBuilder('100084') . "\nKetik \".help\" untuk bantuan.";
@@ -256,7 +266,8 @@ class Webhook extends Controller
 
         // send response
         $textMessageBuilder = new TextMessageBuilder($message);
-        $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+        $multiMessageBuilder->add($textMessageBuilder);
+        $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
     }
 
     private function remembering($tableName)
