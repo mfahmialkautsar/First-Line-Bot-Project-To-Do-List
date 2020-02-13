@@ -11,6 +11,7 @@ use Illuminate\Log\Logger;
 use LINE\LINEBot;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 use LINE\LINEBot\MessageBuilder\MultiMessageBuilder;
+use LINE\LINEBot\MessageBuilder\StickerMessageBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
@@ -50,7 +51,7 @@ class Webhook extends Controller
      * @var array
      */
     private $user;
-    private $help = "How To Use\n\n\fUntuk menyimpan catatan: Gunakan \".note [catatan kamu]\"\n\fUntuk menghapus catatan: Gunakan \".forget [nomor catatan di list]\"\n\fUntuk melihat list catatan: Gunakan \".show\"\n\fUntuk melihat bantuan: Gunakan \".help\"";
+    private $help = "\tHow To Use\n\n\fUntuk menyimpan catatan: Gunakan \".note [catatan kamu]\"\n\fUntuk menghapus catatan: Gunakan \".forget [nomor catatan di list]\"\n\fUntuk melihat list catatan: Gunakan \".show\"\n\fUntuk melihat bantuan: Gunakan \".help\"";
 
     public function __construct(
         Request $request,
@@ -93,7 +94,7 @@ class Webhook extends Controller
 
         if (is_array($data['events'])) {
             foreach ($data['events'] as $event) {
-                // skip group and room event
+                // handlegroup and room event
                 if (!isset($event['source']['userId'])) {
                     if ($event['type'] == "join") {
                         $this->joinCallback($event);
@@ -168,6 +169,7 @@ class Webhook extends Controller
     private function welcomeMessage($message)
     {
         $introduction = "Aku adalah bot yang bisa mengingat catatan kamu supaya kamu tidak lupa.";
+        $stickerMessageBuilder = new StickerMessageBuilder(11538, 51626494);
 
         // prepare help button
         $helpButton[] = new MessageTemplateActionBuilder("How To Use", ".help");
@@ -182,6 +184,7 @@ class Webhook extends Controller
         // merge all messages
         $multiMessageBuilder = new MultiMessageBuilder();
         $multiMessageBuilder->add($haloMessage);
+        $multiMessageBuilder->add($stickerMessageBuilder);
         $multiMessageBuilder->add($introductionMessage);
         return $multiMessageBuilder;
     }

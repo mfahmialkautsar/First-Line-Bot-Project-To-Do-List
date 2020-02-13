@@ -65,7 +65,7 @@ class MemoryGateway extends Migration
             $this->up($tableName);
             $this->rememberThis($tableName, $note);
         }
-        return "Noted.";
+        return "Noted " . intval(0x10008F);
     }
 
     public function count(string $tableName)
