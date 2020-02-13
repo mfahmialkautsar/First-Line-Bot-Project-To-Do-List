@@ -95,10 +95,7 @@ class Webhook extends Controller
         if (is_array($data['events'])) {
             foreach ($data['events'] as $event) {
 
-                // handlegroup and room event
-                if ($event['type'] == "join") {
-                    $this->joinCallback($event);
-                }
+                // skip group and room event
                 if (!isset($event['source']['userId'])) {
                     continue;
                 }
@@ -123,6 +120,10 @@ class Webhook extends Controller
             }
         }
 
+        // handle group and room event
+        if ($event['type'] == "join") {
+            $this->joinCallback($event);
+        }
         $this->response->setContent("No event found!");
         $this->response->setStatusCode(200);
         return $this->response;
