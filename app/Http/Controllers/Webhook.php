@@ -157,24 +157,28 @@ class Webhook extends Controller
         $source = $event['source']['type'];
         $res = $this->bot->getProfile($event['source']['userId']);
 
-        $groupId = $event['source']['groupId'];
-        $roomId = $event['source']['groupId'];
+        // determine the table database
+        if ($source == "room") {
+            $roomId = $event['source']['roomId'];
+        } else if ($source == "group") {
+            $groupId = $event['source']['groupId'];
+        }
 
         // create welcome message
         $message = "Hai " . "Gaes!";
 
 
-        if ($source == "room") {
-            // save room data
-            $this->userGateway->saveRoom(
-                $groupId
-            );
-        } else if ($source == "group") {
-            // save group data
-            $this->userGateway->saveGroup(
-                $roomId
-            );
-        }
+        // if ($source == "room") {
+        //     // save room data
+        //     $this->userGateway->saveRoom(
+        //         $groupId
+        //     );
+        // } else if ($source == "group") {
+        //     // save group data
+        //     $this->userGateway->saveGroup(
+        //         $roomId
+        //     );
+        // }
 
         // $haloMessage = new TextMessageBuilder($message);
         // $textMessaegeBuilder2 = new TextMessageBuilder($this->introduction);
@@ -233,19 +237,19 @@ class Webhook extends Controller
         $res = $this->bot->getProfile($event['source']['userId']);
 
         $profile = $res->getJSONDecodedBody();
-        $userId = $profile['userId'];
-        $groupId = $event['source']['groupId'];
-        $roomId = $event['source']['roomId'];
 
         if ($res->isSucceeded()) {
             $tableName = null;
 
             // determine the table database
             if ($source == "user") {
+                $userId = $profile['userId'];
                 $tableName = $userId;
             } else if ($source == "room") {
+                $roomId = $event['source']['roomId'];
                 $tableName = $roomId;
             } else if ($source == "group") {
+                $groupId = $event['source']['groupId'];
                 $tableName = $groupId;
             }
 
