@@ -210,21 +210,23 @@ class Webhook extends Controller
         $source = $event['source']['type'];
         $res = $this->bot->getProfile($event['source']['userId']);
 
-        // if bot needs to leave
-        if (strtolower($text) == "bot leave") {
-            if ($source != "user") {
-                $message = "bye ges " . $this->emojiBuilder('10007C');
-                $textMessageBuilder = new TextMessageBuilder($message);
-                $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
-                if ($source == "room") {
-                    $this->bot->leaveRoom($event['source']['roomId']);
-                } else if ($source == "group") {
-                    $this->bot->leaveGroup($event['source']['groupId']);
-                }
-            }
-        }
 
         if ($res->isSucceeded()) {
+
+            // if bot needs to leave
+            if (strtolower($text) == "bot leave") {
+                if ($source != "user") {
+                    $message = "bye ges " . $this->emojiBuilder('10007C');
+                    $textMessageBuilder = new TextMessageBuilder($message);
+                    $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+                    if ($source == "room") {
+                        $this->bot->leaveRoom($event['source']['roomId']);
+                    } else if ($source == "group") {
+                        $this->bot->leaveGroup($event['source']['groupId']);
+                    }
+                }
+            }
+
             $profile = $res->getJSONDecodedBody();
             // if (strtolower($intent) == '#~delete') {
             //     $this->memoryGateway->down($profile['userId']);
@@ -261,6 +263,8 @@ class Webhook extends Controller
                     return;
                 }
             }
+        } else {
+            $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
         }
 
         if ($additionalMessage) {
