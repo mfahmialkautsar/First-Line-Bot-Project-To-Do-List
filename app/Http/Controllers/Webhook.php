@@ -155,7 +155,6 @@ class Webhook extends Controller
     private function joinCallback($event)
     {
         $source = $event['source']['type'];
-        $res = $this->bot->getProfile($event['source']['userId']);
 
         // determine the table database
         if ($source == "room") {
