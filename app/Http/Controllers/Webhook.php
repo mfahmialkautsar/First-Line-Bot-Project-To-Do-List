@@ -210,6 +210,9 @@ class Webhook extends Controller
         $source = $event['source']['type'];
         $res = $this->bot->getProfile($event['source']['userId']);
 
+        $profile = $res->getJSONDecodedBody();
+        $userId = $profile['userId'];
+        $groupId = $profile['groupId'];
 
         if ($res->isSucceeded()) {
 
@@ -222,12 +225,11 @@ class Webhook extends Controller
                     if ($source == "room") {
                         $this->bot->leaveRoom($event['source']['roomId']);
                     } else if ($source == "group") {
-                        $this->bot->leaveGroup($event['source']['groupId']);
+                        $this->bot->leaveGroup($groupId);
                     }
                 }
             }
 
-            $profile = $res->getJSONDecodedBody();
             // if (strtolower($intent) == '#~delete') {
             //     $this->memoryGateway->down($profile['userId']);
             //     $message = "You have deleted all the memories";
