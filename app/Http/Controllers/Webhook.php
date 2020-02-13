@@ -95,7 +95,7 @@ class Webhook extends Controller
         if (is_array($data['events'])) {
             foreach ($data['events'] as $event) {
                 // handlegroup and room event
-                if (!isset($event['source']['userId'])) {
+                if ($event['source']['type'] == "group" || $event['source']['type'] == "room") {
                     if ($event['type'] == "join") {
                         $this->joinCallback($event);
                     }
