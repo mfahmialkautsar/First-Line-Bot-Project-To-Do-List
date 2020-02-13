@@ -94,12 +94,12 @@ class Webhook extends Controller
 
         if (is_array($data['events'])) {
             foreach ($data['events'] as $event) {
-                // handlegroup and room event
 
-                if ($event['type'] == "join") {
-                    $this->joinCallback($event);
-                }
+                // handlegroup and room event
                 if (!isset($event['source']['userId'])) {
+                    if ($event['type'] == "join") {
+                        $this->joinCallback($event);
+                    }
                     continue;
                 }
 
@@ -164,7 +164,7 @@ class Webhook extends Controller
         // $multiMessageBuilder->add($textMessaegeBuilder2);
 
         // send reply message
-        $this->bot->replyMessage($event['replyToken'], $this->welcomeMessage($message));
+        $response = $this->bot->replyMessage($event['replyToken'], $this->welcomeMessage($message));
     }
 
     private function welcomeMessage($message)
