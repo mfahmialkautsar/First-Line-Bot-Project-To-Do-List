@@ -52,10 +52,8 @@ class Webhook extends Controller
      */
     private $user;
 
-    private $help = "\tHow To Use\n\n‣Untuk menyimpan note: Gunakan \".new [note kamu]\"\n‣Untuk menghapus note: Gunakan \".del [nomor note]\"\n‣Untuk melihat list note: Gunakan \".show\"\n‣Untuk melihat bantuan: Gunakan \".help\"";
-    private $groupText = "Grup";
-    private $multiChat = "Multi Chat";
-
+    private $help = "\tHow To Use\n ‣Untuk menyimpan note: Gunakan \".new [note kamu]\"\n‣Untuk menghapus note: Gunakan \".del [nomor note]\"\n‣Untuk melihat list note: Gunakan \".show\"\n‣Untuk melihat bantuan: Gunakan \".help\"\n\n*Note yang disimpan di To-Do List ini akan berbeda untuk setiap private chat, multi chat, dan group chat. Jadi kamu bisa bikin To-Do List pribadi dan To-Do List grup.";
+    
     public function __construct(
         Request $request,
         Response $response,
@@ -202,7 +200,7 @@ class Webhook extends Controller
 
     private function welcomeMessage($message)
     {
-        $introduction = "Aku adalah bot yang akan membantu mengingat To-Do List kamu, multichat kamu, dan juga grup kamu supaya kamu tidak lupa.";
+        $introduction = "Aku adalah bot yang akan membantu mengingat To-Do List kamu supaya kamu tidak lupa.";
         $stickerMessageBuilder = new StickerMessageBuilder(11538, 51626494);
 
         // prepare help button
@@ -225,14 +223,17 @@ class Webhook extends Controller
 
     private function textMessage($event)
     {
+        $help2 = "Tips: kamu bisa hapus beberapa note sekaligus " . $this->emojiBuilder('10007F') . "\nContoh mau hapus note nomor 2, 5, dan 11. Kamu bisa tulis \".del 2 5 11\"";
+
         $message = "Ups, ada yang salah.";
         $text = $event['message']['text'];
         $trim = trim($text);
         $words = preg_split("/[\s,]+/", $trim);
         $intent = $words[0];
+        $note = null;
 
-        $multiMessageBuilder = new MultiMessageBuilder();
         $additionalMessage = null;
+        $tipsMessage = null;
 
         // create the right words
         if (isset($words[1])) {
@@ -240,7 +241,6 @@ class Webhook extends Controller
             $note = implode(" ", $words);
         }
 
-        // BETA TEST
         $source = $event['source']['type'];
         $res = $this->bot->getProfile($event['source']['userId']);
         $profile = $res->getJSONDecodedBody();
@@ -288,7 +288,20 @@ class Webhook extends Controller
                     case '.del':
                         if (isset($note) && $note) {
                             $reply = "Note Dihapus " . $this->emojiBuilder('10008F');
-                            $message = $this->memoryGateway->forgetMemory($tableName, $note, $reply);
+                            $deleteCount = count($words);
+                            // if ($deleteCount > 1) {
+                            if (is_int($words[0])) {
+                                for ($i = 0; $i < $deleteCount; $i++) {
+                                    if (is_int($words[$i])) {
+                                        $message = $this->memoryGateway->forgetMemory($tableName, $words[$i], $reply);
+                                    } else {
+                                        $reply = "Ada yang salah tuh. Tapi gapapa, note berhasil dihapus " . $this->emojiBuilder('10008F');
+                                        $message = $reply;
+                                    }
+                                }
+                            } else {
+                                continue;
+                            }
                         } else {
                             $message = "Note apa yang mau dihapus?\nKetik \".del [nomor note]\" ya!";
                         }
@@ -301,6 +314,7 @@ class Webhook extends Controller
                         break;
                     case '.help':
                         $message = $this->help;
+                        $tipsMessage = new TextMessageBuilder($help2);
                         if (isset($note) && $note) {
                             $additionalMessage = new TextMessageBuilder("Cukup ketik \".help\" aja buat menampilkan bantuan ya.");
                         }
@@ -317,25 +331,22 @@ class Webhook extends Controller
                 // if (strtolower($intent) == '#~delete') {
                 //     $this->memoryGateway->down($profile['userId']);
                 //     $message = "You have deleted all the memories";
-                // } else 
-                // if (strtolower($intent) == ".new") {
-                // } else if (strtolower($intent) == ".del") {
-                // } else if (strtolower($intent) == ".show") {
-                // } else if (strtolower($intent) == ".help") {
-                // } else {
                 // }
             }
         } else {
             $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
         }
 
+        // send response
+        $multiMessageBuilder = new MultiMessageBuilder();
         if ($additionalMessage) {
             $multiMessageBuilder->add($additionalMessage);
         }
-
-        // send response
         $textMessageBuilder = new TextMessageBuilder($message);
         $multiMessageBuilder->add($textMessageBuilder);
+        if ($tipsMessage) {
+            $multiMessageBuilder->add($tipsMessage);
+        }
         $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
     }
 

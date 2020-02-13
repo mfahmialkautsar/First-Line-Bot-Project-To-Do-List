@@ -68,7 +68,7 @@ class UserGateway
         if (!$room) {
             $this->db->table('rooms')
                 ->insert([
-                    'group_id' => $roomId
+                    'room_id' => $roomId
                 ]);
         }
     }
