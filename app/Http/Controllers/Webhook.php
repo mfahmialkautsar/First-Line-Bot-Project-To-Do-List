@@ -146,7 +146,7 @@ class Webhook extends Controller
             );
 
             // BETA TEST
-            $this->memoryGateway->up($profile['userId']);
+            // $this->memoryGateway->up($profile['userId']);
         }
     }
 
@@ -212,9 +212,20 @@ class Webhook extends Controller
 
         $profile = $res->getJSONDecodedBody();
         $userId = $profile['userId'];
-        $groupId = $profile['groupId'];
+        $groupId = $event['source']['groupId'];
+        $roomId = $event['source']['groupId'];
 
         if ($res->isSucceeded()) {
+            $tableName = null;
+
+            // determine the table database
+            if ($source == "user") {
+                $tableName = $userId;
+            } else if ($source == "room") {
+                $tableName = $roomId;
+            } else if ($source == "group") {
+                $tableName = $groupId;
+            }
 
             // if bot needs to leave
             if (strtolower($text) == "bot leave") {
@@ -223,7 +234,7 @@ class Webhook extends Controller
                     $textMessageBuilder = new TextMessageBuilder($message);
                     $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
                     if ($source == "room") {
-                        $this->bot->leaveRoom($event['source']['roomId']);
+                        $this->bot->leaveRoom($roomId);
                     } else if ($source == "group") {
                         $this->bot->leaveGroup($groupId);
                     }
@@ -237,19 +248,19 @@ class Webhook extends Controller
             if (strtolower($intent) == ".new") {
                 if (isset($note) && $note) {
                     $reply = "Note Tersimpan " . $this->emojiBuilder('100041');
-                    $message = $this->memoryGateway->rememberThis($profile['userId'], $note, $reply);
+                    $message = $this->memoryGateway->rememberThis($tableName, $note, $reply);
                 } else {
                     $message = "Kamu mau buat note apa?\nKetik \".new [note kamu]\" ya!";
                 }
             } else if (strtolower($intent) == ".del") {
                 if (isset($note) && $note) {
                     $reply = "Note Dihapus " . $this->emojiBuilder('10008F');
-                    $message = $this->memoryGateway->forgetMemory($profile['userId'], $note, $reply);
+                    $message = $this->memoryGateway->forgetMemory($tableName, $note, $reply);
                 } else {
                     $message = "Note apa yang mau dihapus?\nKetik \".del [nomor note]\" ya!";
                 }
             } else if (strtolower($intent) == ".show") {
-                $message = $this->remembering($profile['userId']);
+                $message = $this->remembering($tableName);
                 if (isset($note) && $note) {
                     $additionalMessage = new TextMessageBuilder("Cukup ketik \".show\" aja buat menampilkan To-Do List ya.");
                 }
