@@ -51,6 +51,7 @@ class Webhook extends Controller
      * @var array
      */
     private $user;
+
     private $help = "\tHow To Use\n\n‣Untuk menyimpan note: Gunakan \".new [note kamu]\"\n‣Untuk menghapus note: Gunakan \".del [nomor note]\"\n‣Untuk melihat list note: Gunakan \".show\"\n‣Untuk melihat bantuan: Gunakan \".help\"";
     private $groupText = "Grup";
     private $multiChat = "Multi Chat";
@@ -96,10 +97,25 @@ class Webhook extends Controller
 
         if (is_array($data['events'])) {
             foreach ($data['events'] as $event) {
-                // handlegroup and room event
+                // handle group and room event
                 if (!isset($event['source']['userId'])) {
                     if ($event['type'] == "join") {
-                        $this->joinCallback($event);
+                        switch ($event['source']['type']) {
+                            case 'room':
+                                $this->user = $this->userGateway->getRoom($event['source']['roomId']);
+                                break;
+                            case 'group':
+                                $this->user = $this->userGateway->getGroup($event['source']['groupId']);
+                                break;
+                            default:
+                                continue;
+                        }
+
+                        if (!$this->user) $this->joinCallback($event);
+                        else {
+                            // respond event
+                            $this->respondEvent($event);
+                        }
                     }
                     continue;
                 }
@@ -111,15 +127,7 @@ class Webhook extends Controller
                 if (!$this->user) $this->followCallback($event);
                 else {
                     // respond event
-                    if ($event['type'] == 'message') {
-                        if (method_exists($this, $event['message']['type'] . 'Message')) {
-                            $this->{$event['message']['type'] . 'Message'}($event);
-                        }
-                    } else {
-                        if (method_exists($this, $event['type'] . 'Callback')) {
-                            $this->{$event['type'] . 'Callback'}($event);
-                        }
-                    }
+                    $this->respondEvent($event);
                 }
             }
         }
@@ -127,6 +135,19 @@ class Webhook extends Controller
         $this->response->setContent("No event found!");
         $this->response->setStatusCode(200);
         return $this->response;
+    }
+
+    private function respondEvent($event)
+    {
+        if ($event['type'] == 'message') {
+            if (method_exists($this, $event['message']['type'] . 'Message')) {
+                $this->{$event['message']['type'] . 'Message'}($event);
+            }
+        } else {
+            if (method_exists($this, $event['type'] . 'Callback')) {
+                $this->{$event['type'] . 'Callback'}($event);
+            }
+        }
     }
 
     private function followCallback($event)
@@ -146,9 +167,6 @@ class Webhook extends Controller
                 $profile['userId'],
                 $profile['displayName']
             );
-
-            // BETA TEST
-            // $this->memoryGateway->up($profile['userId']);
         }
     }
 
@@ -166,29 +184,20 @@ class Webhook extends Controller
         // create welcome message
         $message = "Hai " . "Gaes!";
 
-
-        // if ($source == "room") {
-        //     // save room data
-        //     $this->userGateway->saveRoom(
-        //         $groupId
-        //     );
-        // } else if ($source == "group") {
-        //     // save group data
-        //     $this->userGateway->saveGroup(
-        //         $roomId
-        //     );
-        // }
-
-        // $haloMessage = new TextMessageBuilder($message);
-        // $textMessaegeBuilder2 = new TextMessageBuilder($this->introduction);
-
-        // // merge all messages
-        // $multiMessageBuilder = new MultiMessageBuilder();
-        // $multiMessageBuilder->add($haloMessage);
-        // $multiMessageBuilder->add($textMessaegeBuilder2);
-
         // send reply message
         $this->bot->replyMessage($event['replyToken'], $this->welcomeMessage($message));
+
+        if ($source == "room") {
+            // save room data
+            $this->userGateway->saveRoom(
+                $roomId
+            );
+        } else if ($source == "group") {
+            // save group data
+            $this->userGateway->saveGroup(
+                $groupId
+            );
+        }
     }
 
     private function welcomeMessage($message)
@@ -234,7 +243,6 @@ class Webhook extends Controller
         // BETA TEST
         $source = $event['source']['type'];
         $res = $this->bot->getProfile($event['source']['userId']);
-
         $profile = $res->getJSONDecodedBody();
 
         if ($res->isSucceeded()) {
@@ -252,56 +260,70 @@ class Webhook extends Controller
                 $tableName = $groupId;
             }
 
-            // if bot needs to leave
-            if (strtolower($text) == "bot leave") {
-                if ($source != "user") {
-                    $message = "bye ges " . $this->emojiBuilder('10007C');
-                    $textMessageBuilder = new TextMessageBuilder($message);
-                    $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
-                    if ($source == "room") {
-                        $this->bot->leaveRoom($roomId);
-                    } else if ($source == "group") {
-                        $this->bot->leaveGroup($groupId);
+            if ($tableName) {
+
+                // if bot needs to leave
+                if (strtolower($text) == "bot leave") {
+                    if ($source != "user") {
+                        $message = "bye ges " . $this->emojiBuilder('10007C');
+                        $textMessageBuilder = new TextMessageBuilder($message);
+                        $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
+                        if ($source == "room") {
+                            $this->bot->leaveRoom($roomId);
+                        } else if ($source == "group") {
+                            $this->bot->leaveGroup($groupId);
+                        }
                     }
                 }
-            }
 
-            if ($tableName) {
+                switch (strtolower($intent)) {
+                    case '.new':
+                        if (isset($note) && $note) {
+                            $reply = "Note Tersimpan " . $this->emojiBuilder('100041');
+                            $message = $this->memoryGateway->rememberThis($tableName, $note, $reply);
+                        } else {
+                            $message = "Kamu mau buat note apa?\nKetik \".new [note kamu]\" ya!";
+                        }
+                        break;
+                    case '.del':
+                        if (isset($note) && $note) {
+                            $reply = "Note Dihapus " . $this->emojiBuilder('10008F');
+                            $message = $this->memoryGateway->forgetMemory($tableName, $note, $reply);
+                        } else {
+                            $message = "Note apa yang mau dihapus?\nKetik \".del [nomor note]\" ya!";
+                        }
+                        break;
+                    case '.show':
+                        $message = $this->remembering($tableName);
+                        if (isset($note) && $note) {
+                            $additionalMessage = new TextMessageBuilder("Cukup ketik \".show\" aja buat menampilkan To-Do List ya.");
+                        }
+                        break;
+                    case '.help':
+                        $message = $this->help;
+                        if (isset($note) && $note) {
+                            $additionalMessage = new TextMessageBuilder("Cukup ketik \".help\" aja buat menampilkan bantuan ya.");
+                        }
+                        break;
+
+                    default:
+                        if ($source == "user") {
+                            $message = "Aku belum mengerti maksud kamu nih " . $this->emojiBuilder('100084') . "\nKetik \".help\" untuk bantuan.";
+                        } else {
+                            return;
+                        }
+                        break;
+                }
                 // if (strtolower($intent) == '#~delete') {
                 //     $this->memoryGateway->down($profile['userId']);
                 //     $message = "You have deleted all the memories";
                 // } else 
-                if (strtolower($intent) == ".new") {
-                    if (isset($note) && $note) {
-                        $reply = "Note Tersimpan " . $this->emojiBuilder('100041');
-                        $message = $this->memoryGateway->rememberThis($tableName, $note, $reply);
-                    } else {
-                        $message = "Kamu mau buat note apa?\nKetik \".new [note kamu]\" ya!";
-                    }
-                } else if (strtolower($intent) == ".del") {
-                    if (isset($note) && $note) {
-                        $reply = "Note Dihapus " . $this->emojiBuilder('10008F');
-                        $message = $this->memoryGateway->forgetMemory($tableName, $note, $reply);
-                    } else {
-                        $message = "Note apa yang mau dihapus?\nKetik \".del [nomor note]\" ya!";
-                    }
-                } else if (strtolower($intent) == ".show") {
-                    $message = $this->remembering($tableName);
-                    if (isset($note) && $note) {
-                        $additionalMessage = new TextMessageBuilder("Cukup ketik \".show\" aja buat menampilkan To-Do List ya.");
-                    }
-                } else if (strtolower($intent) == ".help") {
-                    $message = $this->help;
-                    if (isset($note) && $note) {
-                        $additionalMessage = new TextMessageBuilder("Cukup ketik \".help\" aja buat menampilkan bantuan ya.");
-                    }
-                } else {
-                    if ($source == "user") {
-                        $message = "Aku belum mengerti maksud kamu nih " . $this->emojiBuilder('100084') . "\nKetik \".help\" untuk bantuan.";
-                    } else {
-                        return;
-                    }
-                }
+                // if (strtolower($intent) == ".new") {
+                // } else if (strtolower($intent) == ".del") {
+                // } else if (strtolower($intent) == ".show") {
+                // } else if (strtolower($intent) == ".help") {
+                // } else {
+                // }
             }
         } else {
             $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');

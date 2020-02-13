@@ -54,6 +54,14 @@ class MemoryGateway extends Migration
         Schema::dropIfExists($tableName);
     }
 
+    public function count(string $tableName)
+    {
+        if (Schema::hasTable($tableName)) {
+            return DB::table($tableName)->count();
+        }
+        return 0;
+    }
+
     public function rememberThis($tableName, $note, $message)
     {
         if (Schema::hasTable($tableName)) {
@@ -69,15 +77,6 @@ class MemoryGateway extends Migration
         return $message;
     }
 
-    public function count(string $tableName)
-    {
-        if (Schema::hasTable($tableName)) {
-            return DB::table($tableName)->count();
-        }
-        return 0;
-    }
-
-    // Memory
     function getMemory(string $tableName, int $id)
     {
         $memory = DB::table($tableName)
@@ -97,15 +96,15 @@ class MemoryGateway extends Migration
         // ->where('id', $id)
         // ->delete();
 
-        $this->getRowNumber($tableName, $id, "DELETE");
+        $this->getRowNumber($tableName, $id, "DELETE", "id");
         return $message;
     }
 
-    private function getRowNumber($tableName, $num, $option)
+    private function getRowNumber($tableName, $num, $option, $order)
     {
         $user = DB::select("WITH temp AS
         (
-        SELECT *, ROW_NUMBER() OVER(ORDER BY id) AS number
+        SELECT *, ROW_NUMBER() OVER(ORDER BY $order) AS number
         from \"$tableName\"
         ), temp2 AS (
         SELECT *
