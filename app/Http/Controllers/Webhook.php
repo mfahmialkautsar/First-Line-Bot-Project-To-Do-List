@@ -52,8 +52,6 @@ class Webhook extends Controller
      */
     private $user;
 
-    private $help = "\t\tHow To Use\n‣Untuk menyimpan note: Gunakan \".new [note kamu]\"\n‣Untuk menghapus note: Gunakan \".del [nomor note]\"\n‣Untuk melihat list note: Gunakan \".show\"\n‣Untuk melihat bantuan: Gunakan \".help\"\n\n*Note yang disimpan di To-Do List ini akan berbeda untuk setiap private chat, multi chat, dan group chat. Jadi kamu bisa bikin To-Do List pribadi dan To-Do List grup.";
-
     public function __construct(
         Request $request,
         Response $response,
@@ -225,6 +223,7 @@ class Webhook extends Controller
     {
         // $help2 = "Tips: kamu bisa hapus beberapa note sekaligus " . $this->emojiBuilder('10007F') . "\nContoh mau hapus note nomor 2, 5, dan 11. Kamu bisa tulis \".del 2 5 11\"";
 
+        $help = "\tHow To Use\n‣Untuk menyimpan note: Gunakan \".new [note kamu]\"\n‣Untuk menghapus note: Gunakan \".del [nomor note]\"\n‣Untuk melihat list note: Gunakan \".show\"\n‣Untuk melihat bantuan: Gunakan \".help\"\n\n*Note yang disimpan di To-Do List ini akan berbeda untuk setiap private chat, multi chat, dan group chat. Jadi kamu bisa bikin To-Do List pribadi dan To-Do List grup.";
         $message = "Ups, ada yang salah.";
         $text = $event['message']['text'];
         $trim = trim($text);
@@ -323,13 +322,13 @@ class Webhook extends Controller
                         break;
                     case '.show':
                         $message = $this->remembering($tableName);
-                        if (isset($note) && $note) {
+                        if ($note) {
                             $additionalMessage = new TextMessageBuilder("Cukup ketik \".show\" aja buat menampilkan To-Do List ya.");
                         }
                         break;
                     case '.help':
-                        $message = $this->help;
-                        if (isset($note) && $note) {
+                        $message = $help;
+                        if ($note) {
                             $additionalMessage = new TextMessageBuilder("Cukup ketik \".help\" aja buat menampilkan bantuan ya.");
                         }
                         break;
