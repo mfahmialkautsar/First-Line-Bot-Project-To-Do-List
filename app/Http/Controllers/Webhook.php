@@ -308,13 +308,15 @@ class Webhook extends Controller
                                     $isPassed = false;
                                     continue;
                                 }
+                                // }
+                            }
 
+                            for ($i = 0; $i < $deleteCount; $i++) {
                                 if ($isPassed) {
                                     $message = "dihapus";
                                 } else {
                                     $message = "tidak dihapus";
                                 }
-                                // }
                             }
                             // else {
                             //     continue;
