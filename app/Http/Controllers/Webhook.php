@@ -296,27 +296,23 @@ class Webhook extends Controller
                                 // if (isset($result[0][0])) {
                                 if (isset($result[0][0]) && ($result[0][0] == $words[$i])) {
                                     // if (is_int($deleteList)) {
-                                    $message = "passed";
                                     $isPassed = true;
-                                    // $message = $this->memoryGateway->forgetMemory($tableName, $words[$i], $reply);
                                     // } else {
                                     //     $reply = "Ada yang salah tuh. Tapi gapapa, note berhasil dihapus " . $this->emojiBuilder('10008F');
                                     //     $message = $reply;
                                     // }
                                 } else {
-                                    $message = "not passed";
                                     $isPassed = false;
                                     break;
                                 }
                                 // }
                             }
 
+                            // delete note
                             if ($isPassed) {
                                 for ($i = 0; $i < $deleteCount; $i++) {
-                                    $message = "dihapus";
+                                    $message = $this->memoryGateway->forgetMemory($tableName, $words[$i], $reply);
                                 }
-                            } else {
-                                // $message = "tidak dihapus";
                             }
                             // else {
                             //     continue;
