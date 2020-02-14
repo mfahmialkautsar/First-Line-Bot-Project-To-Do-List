@@ -306,17 +306,17 @@ class Webhook extends Controller
                                 } else {
                                     $message = "not passed";
                                     $isPassed = false;
-                                    continue;
+                                    break;
                                 }
                                 // }
                             }
 
-                            for ($i = 0; $i < $deleteCount; $i++) {
-                                if ($isPassed) {
+                            if ($isPassed) {
+                                for ($i = 0; $i < $deleteCount; $i++) {
                                     $message = "dihapus";
-                                } else {
-                                    $message = "tidak dihapus";
                                 }
+                            } else {
+                                $message = "tidak dihapus";
                             }
                             // else {
                             //     continue;
