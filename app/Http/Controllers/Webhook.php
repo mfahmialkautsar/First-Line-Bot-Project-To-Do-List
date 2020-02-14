@@ -316,7 +316,7 @@ class Webhook extends Controller
                                     $message = "dihapus";
                                 }
                             } else {
-                                $message = "tidak dihapus";
+                                // $message = "tidak dihapus";
                             }
                             // else {
                             //     continue;
