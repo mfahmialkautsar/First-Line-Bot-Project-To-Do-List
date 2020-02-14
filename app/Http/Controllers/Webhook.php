@@ -148,6 +148,10 @@ class Webhook extends Controller
 
     private function followCallback($event)
     {
+        $text = $event['message']['text'];
+        $trim = trim($text);
+        $words = preg_split("/[\s,]+/", $trim);
+        $intent = $words[0];
         $res = $this->bot->getProfile($event['source']['userId']);
         if ($res->isSucceeded()) {
             $profile = $res->getJSONDecodedBody();
@@ -163,11 +167,29 @@ class Webhook extends Controller
             );
         } else {
             $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
+            switch (strtolower($intent)) {
+                case '.new':
+                case '.del':
+                case '.show':
+                case '.help':
+                    $message = $message;
+                    break;
+
+                default:
+                    if (strtolower($text) != "bot leave") {
+                        return;
+                    } else {
+                        $message = $message;
+                        break;
+                    }
+            }
             $messageBuilder = new TextMessageBuilder($message);
         }
 
-        // send reply message
-        $this->bot->replyMessage($event['replyToken'], $messageBuilder);
+        if (isset($messageBuilder)) {
+            // send reply message
+            $this->bot->replyMessage($event['replyToken'], $messageBuilder);
+        }
     }
 
     private function joinCallback($event)
