@@ -306,6 +306,12 @@ class Webhook extends Controller
                                     $isPassed = false;
                                     continue;
                                 }
+                                
+                                if ($isPassed) {
+                                    $message = "dihapus";
+                                } else {
+                                    $message = "tidak dihapus";
+                                }
                             }
                             // else {
                             //     continue;
