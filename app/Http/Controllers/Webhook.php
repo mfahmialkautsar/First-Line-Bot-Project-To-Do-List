@@ -316,7 +316,7 @@ class Webhook extends Controller
                             }
 
                             // delete note
-                            if ($isPassed) {
+                            if (isset($isPassed) && $isPassed) {
                                 $message = $this->memoryGateway->forgetMemory($tableName, $words[0], $reply);
                             }
                             // else {
