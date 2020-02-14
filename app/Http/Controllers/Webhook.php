@@ -347,9 +347,6 @@ class Webhook extends Controller
                 // }
             }
         } else {
-            if (strtolower($text) == "bot leave") {
-                $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
-            }
             switch (strtolower($intent)) {
                 case '.new':
                 case '.del':
@@ -359,7 +356,11 @@ class Webhook extends Controller
                     break;
 
                 default:
-                    return;
+                    if (strtolower($text) != "bot leave") {
+                        return;
+                    } else {
+                        $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
+                    }
             }
         }
 
