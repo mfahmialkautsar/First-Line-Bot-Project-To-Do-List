@@ -287,12 +287,10 @@ class Webhook extends Controller
                         break;
                     case '.del':
                         if (isset($note) && $note) {
-                            $message = "1";
                             $reply = "Note Dihapus " . $this->emojiBuilder('10008F');
-                            $deleteCount = count($words) - 1;
+                            $deleteCount = count($words);
                             // if ($deleteCount > 1) {
                             for ($i = 0; $i < $deleteCount; $i++) {
-                                $message = "2";
                                 preg_match_all('!\d+!', $words[$i], $result);
                                 if ($result == $words[$i]) {
                                     // if (is_int($deleteList)) {
