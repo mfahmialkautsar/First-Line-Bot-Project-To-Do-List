@@ -201,8 +201,7 @@ class Webhook extends Controller
     private function welcomeMessage($message)
     {
         $introduction = "Aku adalah bot yang akan membantu mengingat To-Do List kamu supaya kamu tidak lupa.";
-        // $stickerMessageBuilder = new StickerMessageBuilder(11538, 51626494);
-        $stickerMessageBuilder = new StickerMessageBuilder(9800, 22926160);
+        $stickerMessageBuilder = new StickerMessageBuilder(11538, 51626494);
 
         // prepare help button
         $helpButton[] = new MessageTemplateActionBuilder("How To Use", ".help");
