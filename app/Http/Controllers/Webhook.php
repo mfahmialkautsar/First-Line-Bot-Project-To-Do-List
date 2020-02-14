@@ -296,7 +296,7 @@ class Webhook extends Controller
                                 // if (isset($result[0][0])) {
                                 if (isset($result[0][0]) && ($result[0][0] == $words[$i])) {
                                     // if (is_int($deleteList)) {
-                                    if ($result > $this->memoryGateway->count($tableName)) {
+                                    if ($result[0][0] > $this->memoryGateway->count($tableName)) {
                                         $isPassed = false;
                                         break;
                                     } else {
