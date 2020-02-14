@@ -278,7 +278,7 @@ class Webhook extends Controller
 
                 switch (strtolower($intent)) {
                     case '.new':
-                        if (isset($note) && $note) {
+                        if ($note) {
                             $reply = "Note Tersimpan " . $this->emojiBuilder('100041');
                             $message = $this->memoryGateway->rememberThis($tableName, $note, $reply);
                         } else {
@@ -286,7 +286,7 @@ class Webhook extends Controller
                         }
                         break;
                     case '.del':
-                        if (isset($note) && $note) {
+                        if ($note) {
                             $reply = "Note Dihapus " . $this->emojiBuilder('10008F');
                             $deleteCount = count($words);
                             if ($deleteCount == 1) {
@@ -294,7 +294,7 @@ class Webhook extends Controller
                                 // extract int
                                 preg_match_all('!\d+\.*\d*!', $words[0], $result);
                                 // check if there's int
-                                if (isset($result[0][0]) && ($result[0][0] == $words[0])) {
+                                if (isset($result[0][0]) && ($result[0][0] == (int) $words[0])) {
                                     // check if has just 1 int
                                     if (!isset($result[0][1])) {
                                         if ($result[0][0] > $this->memoryGateway->count($tableName)) {
