@@ -223,7 +223,7 @@ class Webhook extends Controller
     {
         // $help2 = "Tips: kamu bisa hapus beberapa note sekaligus " . $this->emojiBuilder('10007F') . "\nContoh mau hapus note nomor 2, 5, dan 11. Kamu bisa tulis \".del 2 5 11\"";
 
-        $help = "\tHow To Use\n‣Untuk menyimpan note: Gunakan \".new [note kamu]\"\n‣Untuk menghapus note: Gunakan \".del [nomor note]\"\n‣Untuk melihat list note: Gunakan \".show\"\n‣Untuk melihat bantuan: Gunakan \".help\"\n\n*Note yang disimpan di To-Do List ini akan berbeda untuk setiap private chat, multi chat, dan group chat. Jadi kamu bisa bikin To-Do List pribadi dan To-Do List grup.";
+        $help = "\tHow To Use\n‣Untuk menyimpan note: Ketik \".new [note kamu]\"\n‣Untuk menghapus note: Ketik \".del [nomor note]\"\n‣Untuk melihat list note: Ketik \".show\"\n‣Untuk melihat bantuan: Ketik \".help\"\n\n*Note yang disimpan di To-Do List ini akan berbeda untuk setiap private chat, multi chat, dan group chat. Jadi kamu bisa bikin To-Do List pribadi dan To-Do List grup.";
         $message = "Ups, ada yang salah.";
         $text = $event['message']['text'];
         $trim = trim($text);
@@ -347,19 +347,20 @@ class Webhook extends Controller
                 // }
             }
         } else {
+            $mustAddMessage = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
             switch (strtolower($intent)) {
                 case '.new':
                 case '.del':
                 case '.show':
                 case '.help':
-                    $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
+                    $message = $mustAddMessage;
                     break;
 
                 default:
                     if (strtolower($text) != "bot leave") {
                         return;
                     } else {
-                        $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
+                        $message = $mustAddMessage;
                         break;
                     }
             }
