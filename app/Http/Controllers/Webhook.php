@@ -223,7 +223,7 @@ class Webhook extends Controller
 
     private function textMessage($event)
     {
-        $help2 = "Tips: kamu bisa hapus beberapa note sekaligus " . $this->emojiBuilder('10007F') . "\nContoh mau hapus note nomor 2, 5, dan 11. Kamu bisa tulis \".del 2 5 11\"";
+        // $help2 = "Tips: kamu bisa hapus beberapa note sekaligus " . $this->emojiBuilder('10007F') . "\nContoh mau hapus note nomor 2, 5, dan 11. Kamu bisa tulis \".del 2 5 11\"";
 
         $message = "Ups, ada yang salah.";
         $text = $event['message']['text'];
@@ -233,7 +233,6 @@ class Webhook extends Controller
         $note = null;
 
         $additionalMessage = null;
-        $tipsMessage = null;
 
         // create the right words
         if (isset($words[1])) {
@@ -334,7 +333,6 @@ class Webhook extends Controller
                         break;
                     case '.help':
                         $message = $this->help;
-                        $tipsMessage = new TextMessageBuilder($help2);
                         if (isset($note) && $note) {
                             $additionalMessage = new TextMessageBuilder("Cukup ketik \".help\" aja buat menampilkan bantuan ya.");
                         }
@@ -364,9 +362,9 @@ class Webhook extends Controller
         }
         $textMessageBuilder = new TextMessageBuilder($message);
         $multiMessageBuilder->add($textMessageBuilder);
-        if ($tipsMessage) {
-            $multiMessageBuilder->add($tipsMessage);
-        }
+        // if ($tipsMessage) {
+        //     $multiMessageBuilder->add($tipsMessage);
+        // }
         $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
     }
 
