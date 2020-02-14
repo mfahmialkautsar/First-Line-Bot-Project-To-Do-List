@@ -296,7 +296,12 @@ class Webhook extends Controller
                                 // if (isset($result[0][0])) {
                                 if (isset($result[0][0]) && ($result[0][0] == $words[$i])) {
                                     // if (is_int($deleteList)) {
-                                    $isPassed = true;
+                                    if ($result > $this->memoryGateway->count($tableName)) {
+                                        $isPassed = false;
+                                        break;
+                                    } else {
+                                        $isPassed = true;
+                                    }
                                     // } else {
                                     //     $reply = "Ada yang salah tuh. Tapi gapapa, note berhasil dihapus " . $this->emojiBuilder('10008F');
                                     //     $message = $reply;
