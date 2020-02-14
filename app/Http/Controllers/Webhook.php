@@ -52,7 +52,7 @@ class Webhook extends Controller
      */
     private $user;
 
-    private $help = "\tHow To Use\n ‣Untuk menyimpan note: Gunakan \".new [note kamu]\"\n‣Untuk menghapus note: Gunakan \".del [nomor note]\"\n‣Untuk melihat list note: Gunakan \".show\"\n‣Untuk melihat bantuan: Gunakan \".help\"\n\n*Note yang disimpan di To-Do List ini akan berbeda untuk setiap private chat, multi chat, dan group chat. Jadi kamu bisa bikin To-Do List pribadi dan To-Do List grup.";
+    private $help = "\t\tHow To Use\n‣Untuk menyimpan note: Gunakan \".new [note kamu]\"\n‣Untuk menghapus note: Gunakan \".del [nomor note]\"\n‣Untuk melihat list note: Gunakan \".show\"\n‣Untuk melihat bantuan: Gunakan \".help\"\n\n*Note yang disimpan di To-Do List ini akan berbeda untuk setiap private chat, multi chat, dan group chat. Jadi kamu bisa bikin To-Do List pribadi dan To-Do List grup.";
 
     public function __construct(
         Request $request,
