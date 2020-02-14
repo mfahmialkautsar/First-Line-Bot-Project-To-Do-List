@@ -292,10 +292,10 @@ class Webhook extends Controller
                             // if ($deleteCount > 1) {
                             for ($i = 0; $i < $deleteCount; $i++) {
                                 preg_match_all('!\d+!', $words[$i], $result);
-                                if ($result == $words[$i]) {
+                                if ($result[0][$i] == $words[$i]) {
                                     // if (is_int($deleteList)) {
-                                        $message = "passed";
-                                        $isPassed = true;
+                                    $message = "passed";
+                                    $isPassed = true;
                                     // $message = $this->memoryGateway->forgetMemory($tableName, $words[$i], $reply);
                                     // } else {
                                     //     $reply = "Ada yang salah tuh. Tapi gapapa, note berhasil dihapus " . $this->emojiBuilder('10008F');
@@ -306,7 +306,7 @@ class Webhook extends Controller
                                     $isPassed = false;
                                     continue;
                                 }
-                                
+
                                 if ($isPassed) {
                                     $message = "dihapus";
                                 } else {
