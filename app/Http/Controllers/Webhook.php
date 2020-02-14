@@ -107,11 +107,11 @@ class Webhook extends Controller
                                 continue;
                         }
 
-                        if (!$this->user) $this->joinCallback($event);
-                        else {
-                            // respond event
-                            $this->respondEvent($event);
-                        }
+                        // if (!$this->user) $this->joinCallback($event);
+                        // else {
+                        // respond event
+                        $this->respondEvent($event);
+                        // }
                     }
                     continue;
                 }
@@ -122,8 +122,8 @@ class Webhook extends Controller
                 // if user not registered
                 // if (!$this->user) $this->followCallback($event);
                 // else {
-                    // respond event
-                    $this->respondEvent($event);
+                // respond event
+                $this->respondEvent($event);
                 // }
             }
         }
@@ -152,7 +152,7 @@ class Webhook extends Controller
         // $trim = trim($text);
         // $words = preg_split("/[\s,]+/", $trim);
         // $intent = $words[0];
-        
+
         $res = $this->bot->getProfile($event['source']['userId']);
         if ($res->isSucceeded()) {
             $profile = $res->getJSONDecodedBody();
