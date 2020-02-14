@@ -292,7 +292,7 @@ class Webhook extends Controller
                             // if ($deleteCount > 1) {
                             // preg_match_all('!\d+!', $note, $matches);
                             for ($i = 0; $i < $deleteCount; $i++) {
-                                if (((int) $words[$i]) == $words[$i]) {
+                                if (((int) $words[$i]) != 0) {
                                     // if (is_int($deleteList)) {
                                         $message = "passed";
                                         $isPassed = true;
