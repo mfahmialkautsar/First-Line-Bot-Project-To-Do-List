@@ -347,8 +347,16 @@ class Webhook extends Controller
                 // }
             }
         } else {
-            if ($source != "user") {
-                $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
+            switch (strtolower($intent)) {
+                case '.new':
+                case '.del':
+                case '.show':
+                case '.help':
+                    $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
+                    break;
+
+                default:
+                    return;
             }
         }
 
