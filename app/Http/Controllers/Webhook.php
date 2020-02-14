@@ -120,11 +120,11 @@ class Webhook extends Controller
                 $this->user = $this->userGateway->getUser($event['source']['userId']);
 
                 // if user not registered
-                if (!$this->user) $this->followCallback($event);
-                else {
+                // if (!$this->user) $this->followCallback($event);
+                // else {
                     // respond event
                     $this->respondEvent($event);
-                }
+                // }
             }
         }
 
@@ -148,10 +148,11 @@ class Webhook extends Controller
 
     private function followCallback($event)
     {
-        $text = $event['message']['text'];
-        $trim = trim($text);
-        $words = preg_split("/[\s,]+/", $trim);
-        $intent = $words[0];
+        // $text = $event['message']['text'];
+        // $trim = trim($text);
+        // $words = preg_split("/[\s,]+/", $trim);
+        // $intent = $words[0];
+        
         $res = $this->bot->getProfile($event['source']['userId']);
         if ($res->isSucceeded()) {
             $profile = $res->getJSONDecodedBody();
@@ -165,26 +166,27 @@ class Webhook extends Controller
                 $profile['userId'],
                 $profile['displayName']
             );
-        } else {
-            $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
-            switch (strtolower($intent)) {
-                case '.new':
-                case '.del':
-                case '.show':
-                case '.help':
-                    $message = $message;
-                    break;
-
-                default:
-                    if (strtolower($text) != "bot leave") {
-                        return;
-                    } else {
-                        $message = $message;
-                        break;
-                    }
-            }
-            $messageBuilder = new TextMessageBuilder($message);
         }
+        //  else {
+        //     $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
+        //     switch (strtolower($intent)) {
+        //         case '.new':
+        //         case '.del':
+        //         case '.show':
+        //         case '.help':
+        //             $message = $message;
+        //             break;
+
+        //         default:
+        //             if (strtolower($text) != "bot leave") {
+        //                 return;
+        //             } else {
+        //                 $message = $message;
+        //                 break;
+        //             }
+        //     }
+        //     $messageBuilder = new TextMessageBuilder($message);
+        // }
 
         if (isset($messageBuilder)) {
             // send reply message
