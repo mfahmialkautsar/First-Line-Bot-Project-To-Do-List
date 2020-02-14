@@ -289,35 +289,35 @@ class Webhook extends Controller
                         if (isset($note) && $note) {
                             $reply = "Note Dihapus " . $this->emojiBuilder('10008F');
                             $deleteCount = count($words);
-                            // if ($deleteCount > 1) {
-                            for ($i = 0; $i < $deleteCount; $i++) {
+                            if ($deleteCount == 1) {
+                                // for ($i = 0; $i < $deleteCount; $i++) {
                                 // extract int
-                                preg_match_all('!\d+!', $words[$i], $result);
-                                // if (isset($result[0][0])) {
-                                if (isset($result[0][0]) && ($result[0][0] == $words[$i])) {
-                                    // if (is_int($deleteList)) {
-                                    if ($result[0][0] > $this->memoryGateway->count($tableName)) {
-                                        $isPassed = false;
-                                        break;
+                                preg_match_all('!\d+\.*\d*!', $words[0], $result);
+                                // check if there's int
+                                if (isset($result[0][0]) && ($result[0][0] == $words[0])) {
+                                    // check if has just 1 int
+                                    if (!isset($result[0][1])) {
+                                        if ($result[0][0] > $this->memoryGateway->count($tableName)) {
+                                            $isPassed = false;
+                                        } else {
+                                            $isPassed = true;
+                                        }
                                     } else {
-                                        $isPassed = true;
+                                        $isPassed = false;
                                     }
-                                    // } else {
+                                    // else {
                                     //     $reply = "Ada yang salah tuh. Tapi gapapa, note berhasil dihapus " . $this->emojiBuilder('10008F');
                                     //     $message = $reply;
                                     // }
                                 } else {
                                     $isPassed = false;
-                                    break;
                                 }
                                 // }
                             }
 
                             // delete note
                             if ($isPassed) {
-                                for ($i = 0; $i < $deleteCount; $i++) {
-                                    $message = $this->memoryGateway->forgetMemory($tableName, $words[$i], $reply);
-                                }
+                                $message = $this->memoryGateway->forgetMemory($tableName, $words[0], $reply);
                             }
                             // else {
                             //     continue;
