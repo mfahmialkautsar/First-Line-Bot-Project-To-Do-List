@@ -53,7 +53,7 @@ class Webhook extends Controller
     private $user;
 
     private $help = "\tHow To Use\n ‣Untuk menyimpan note: Gunakan \".new [note kamu]\"\n‣Untuk menghapus note: Gunakan \".del [nomor note]\"\n‣Untuk melihat list note: Gunakan \".show\"\n‣Untuk melihat bantuan: Gunakan \".help\"\n\n*Note yang disimpan di To-Do List ini akan berbeda untuk setiap private chat, multi chat, dan group chat. Jadi kamu bisa bikin To-Do List pribadi dan To-Do List grup.";
-    
+
     public function __construct(
         Request $request,
         Response $response,
@@ -290,18 +290,26 @@ class Webhook extends Controller
                             $reply = "Note Dihapus " . $this->emojiBuilder('10008F');
                             $deleteCount = count($words);
                             // if ($deleteCount > 1) {
-                            if (is_int($words[0])) {
-                                for ($i = 0; $i < $deleteCount; $i++) {
-                                    if (is_int($words[$i])) {
-                                        $message = $this->memoryGateway->forgetMemory($tableName, $words[$i], $reply);
-                                    } else {
-                                        $reply = "Ada yang salah tuh. Tapi gapapa, note berhasil dihapus " . $this->emojiBuilder('10008F');
-                                        $message = $reply;
-                                    }
+                            // preg_match_all('!\d+!', $note, $matches);
+                            for ($i = 0; $i < $deleteCount; $i++) {
+                                if ((int) $words[$i] == $words[$i]) {
+                                    // if (is_int($deleteList)) {
+                                        $message = "passed";
+                                        $isPassed = true;
+                                    // $message = $this->memoryGateway->forgetMemory($tableName, $words[$i], $reply);
+                                    // } else {
+                                    //     $reply = "Ada yang salah tuh. Tapi gapapa, note berhasil dihapus " . $this->emojiBuilder('10008F');
+                                    //     $message = $reply;
+                                    // }
+                                } else {
+                                    $message = "not passed";
+                                    $isPassed = false;
+                                    continue;
                                 }
-                            } else {
-                                continue;
                             }
+                            // else {
+                            //     continue;
+                            // }
                         } else {
                             $message = "Note apa yang mau dihapus?\nKetik \".del [nomor note]\" ya!";
                         }
