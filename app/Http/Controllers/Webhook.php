@@ -288,11 +288,11 @@ class Webhook extends Controller
                     case '.del':
                         if (isset($note) && $note) {
                             $reply = "Note Dihapus " . $this->emojiBuilder('10008F');
-                            $deleteCount = count($words);
+                            $deleteCount = count($words) - 1;
                             // if ($deleteCount > 1) {
-                            // preg_match_all('!\d+!', $note, $matches);
-                            for ($i = 0; $i < $deleteCount; $i++) {
-                                if (((int) $words[$i]) != 0) {
+                            for ($i = 1; $i <= $deleteCount; $i++) {
+                                preg_match_all('!\d+!', $words[$i], $result);
+                                if ($result == $words[$i]) {
                                     // if (is_int($deleteList)) {
                                         $message = "passed";
                                         $isPassed = true;
