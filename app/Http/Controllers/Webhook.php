@@ -373,7 +373,7 @@ class Webhook extends Controller
         }
         $textMessageBuilder = new TextMessageBuilder($message);
         $multiMessageBuilder->add($textMessageBuilder);
-        $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
+        $response = $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
     }
 
     private function remembering($tableName)
