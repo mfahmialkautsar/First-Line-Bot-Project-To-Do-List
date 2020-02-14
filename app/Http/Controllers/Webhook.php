@@ -360,6 +360,7 @@ class Webhook extends Controller
                         return;
                     } else {
                         $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
+                        break;
                     }
             }
         }
