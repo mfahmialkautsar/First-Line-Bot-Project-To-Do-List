@@ -154,6 +154,7 @@ class Webhook extends Controller
 
             // create welcome message
             $message = "Halo, " . $profile['displayName'] . "!";
+            $messageBuilder = $this->welcomeMessage($message);
 
             // save user data
             $this->userGateway->saveUser(
@@ -162,10 +163,11 @@ class Webhook extends Controller
             );
         } else {
             $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
+            $messageBuilder = new TextMessageBuilder($message);
         }
-        
+
         // send reply message
-        $this->bot->replyMessage($event['replyToken'], $this->welcomeMessage($message));
+        $this->bot->replyMessage($event['replyToken'], $messageBuilder);
     }
 
     private function joinCallback($event)
