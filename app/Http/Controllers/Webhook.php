@@ -201,7 +201,8 @@ class Webhook extends Controller
     private function welcomeMessage($message)
     {
         $introduction = "Aku adalah bot yang akan membantu mengingat To-Do List kamu supaya kamu tidak lupa.";
-        $stickerMessageBuilder = new StickerMessageBuilder(11538, 51626494);
+        // $stickerMessageBuilder = new StickerMessageBuilder(11538, 51626494);
+        $stickerMessageBuilder = new StickerMessageBuilder(9800, 22926160);
 
         // prepare help button
         $helpButton[] = new MessageTemplateActionBuilder("How To Use", ".help");
@@ -304,10 +305,6 @@ class Webhook extends Controller
                                     } else {
                                         $isPassed = false;
                                     }
-                                    // else {
-                                    //     $reply = "Ada yang salah tuh. Tapi gapapa, note berhasil dihapus " . $this->emojiBuilder('10008F');
-                                    //     $message = $reply;
-                                    // }
                                 } else {
                                     $isPassed = false;
                                 }
@@ -362,9 +359,6 @@ class Webhook extends Controller
         }
         $textMessageBuilder = new TextMessageBuilder($message);
         $multiMessageBuilder->add($textMessageBuilder);
-        // if ($tipsMessage) {
-        //     $multiMessageBuilder->add($tipsMessage);
-        // }
         $this->bot->replyMessage($event['replyToken'], $multiMessageBuilder);
     }
 
