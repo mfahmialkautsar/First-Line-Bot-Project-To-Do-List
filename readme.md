@@ -1,21 +1,18 @@
-# Lumen PHP Framework
+This is a First Line Bot I've ever created. It comes from php language and lumen from laravel that also I never learnt before.
 
-[![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework)
-[![Total Downloads](https://poser.pugx.org/laravel/lumen-framework/d/total.svg)](https://packagist.org/packages/laravel/lumen-framework)
-[![Latest Stable Version](https://poser.pugx.org/laravel/lumen-framework/v/stable.svg)](https://packagist.org/packages/laravel/lumen-framework)
-[![Latest Unstable Version](https://poser.pugx.org/laravel/lumen-framework/v/unstable.svg)](https://packagist.org/packages/laravel/lumen-framework)
-[![License](https://poser.pugx.org/laravel/lumen-framework/license.svg)](https://packagist.org/packages/laravel/lumen-framework)
+You can save your To-Do List with this bot. This bot can save note from different source like Personal Chat, Multi Chat, and Group Chat. So you can make Personal To-Do List or To-Do List for team.
 
-Laravel Lumen is a stunningly fast PHP micro-framework for building web applications with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Lumen attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as routing, database abstraction, queueing, and caching.
+And of course this project won't work without some configurations. I uploaded this to Heroku and using postgresql as database source. So this configuration must be done in heroku config:
 
-## Official Documentation
+APP_KEY : Generate result from web.php
+CHANNEL_ACCESS_TOKEN : From LINE Developers
+CHANNEL_SECRET : From LINE Developers
+DB_CONNECTION : pgsql
+DB_DATABASE : From view credentials database
+DB_HOST : From view credentials database
+DB_PASSWORD : From view credentials database
+DB_PORT : 5432
+DB_USERNAME : From view credentials database
+LOG_CHANNEL : errorlog
 
-Documentation for the framework can be found on the [Lumen website](https://lumen.laravel.com/docs).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Lumen, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Lumen framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Big thanks to Dicoding Indonesia and Line Indonesia that give me this lesson. I will never taste Line Bot if it's not from you.
