@@ -108,11 +108,8 @@ class Webhook extends Controller
                                 continue;
                         }
 
-                        // if (!$this->user) $this->joinCallback($event);
-                        // else {
                         // respond event
                         $this->respondEvent($event);
-                        // }
                     }
                     continue;
                 }
@@ -120,12 +117,9 @@ class Webhook extends Controller
                 // get user data from database
                 $this->user = $this->userGateway->getUser($event['source']['userId']);
 
-                // if user not registered
-                // if (!$this->user) $this->followCallback($event);
-                // else {
+
                 // respond event
                 $this->respondEvent($event);
-                // }
             }
         }
 
@@ -226,9 +220,7 @@ class Webhook extends Controller
 
     private function textMessage($event)
     {
-        // $help2 = "Tips: kamu bisa hapus beberapa note sekaligus " . $this->emojiBuilder('10007F') . "\nContoh mau hapus note nomor 2, 5, dan 11. Kamu bisa tulis \".del 2 5 11\"";
-
-        $help = "\tHow To Use\n‣To save Note: Type \".add [your note]\"\n‣To delete Note: Type \".del [note number]\"\n ^You can delete multiple notes, e.g. \".del 2 1 3\" will delete notes num 2, 1, and 3.\n‣To view Note List: Type \".show\"\n‣For Help: Type \".help\"\n\n*The Notes saved in this To-Do List will be different for each prvate chat, multi chat, and group chat. So, you can create personal To-Do List and To-Do List for team.";
+        $help = "\tHow To Use\n‣To save Note: Type \".add [your note]\"\n‣To delete Note: Type \".del [note number]\"\n^You can delete multiple notes, e.g. \".del 2 1 3\" will delete notes no. 2, 1, and 3.\n‣To view Note List: Type \".show\"\n‣For Help: Type \".help\"\n\n*The Notes saved in this To-Do List will be different for each prvate chat, multi chat, and group chat. So, you can create your personal To-Do List and To-Do List for team. " . $this->emojiBuilder('10008A');
         $message = "Oops, there's something wrong.";
         $text = $event['message']['text'];
         $trim = trim($text);
@@ -268,7 +260,7 @@ class Webhook extends Controller
                 // if bot needs to leave
                 if (strtolower($text) == "bot leave") {
                     if ($source != "user") {
-                        $message = "bye ges " . $this->emojiBuilder('10007C');
+                        $message = "bye guys " . $this->emojiBuilder('10007C');
                         $textMessageBuilder = new TextMessageBuilder($message);
                         $this->bot->replyMessage($event['replyToken'], $textMessageBuilder);
                         if ($source == "room") {
@@ -285,16 +277,12 @@ class Webhook extends Controller
                             $reply = "Note Saved " . $this->emojiBuilder('100041');
                             $message = $this->memoryGateway->rememberThis($tableName, $note, $reply);
                         } else {
-                            $message = "What note do wanna add?\nType \".add [your note]\"!";
+                            $message = "What note do wanna add?\nType \".add [your note]\"";
                         }
                         break;
                     case '.del':
                         if ($note) {
 
-                            // test
-                            // $message = "OOPS";
-                            // $words = ["2", 3, 1, 2, 6];
-                            
                             $deleteCount = count($words);
                             $newWords = array();
 
@@ -311,18 +299,18 @@ class Webhook extends Controller
                                     break;
                                 }
                                 $number = (int) $words[$i];
-                                
+
                                 // check if there's same input
                                 if (in_array($number, $newWords)) {
                                     $message = "Oops, you can't delete the same number";
                                     $isPassed = false;
-                                break;
+                                    break;
                                 }
 
                                 // check if input is not out of bound
                                 if ($number > $this->memoryGateway->count($tableName)) {
                                     $isPassed = false;
-                                break;
+                                    break;
                                 } else {
                                     array_push($newWords, $number);
                                     $isPassed = true;
@@ -331,8 +319,9 @@ class Webhook extends Controller
 
                             // delete note
                             if (isset($isPassed) && $isPassed) {
+
                                 // set reply
-                                $reply = "Note Deleted " . $this->emojiBuilder('10008F');
+                                $message = "Note Deleted " . $this->emojiBuilder('10008F');
 
                                 // algorithm for deleting table item based on array
                                 $deletes = array();
@@ -350,10 +339,8 @@ class Webhook extends Controller
                                 }
 
                                 for ($i = 0; $i < count($deletes); $i++) {
-                                    // echo ($deletes[$i]);
                                     $this->memoryGateway->forgetMemory($tableName, $deletes[$i]);
                                 }
-                                $message = $reply;
                             }
                         } else {
                             $message = "What note do you wanna delete?\nType \".del [note number]\"";
@@ -380,13 +367,27 @@ class Webhook extends Controller
                         }
                         break;
                 }
-                // if (strtolower($intent) == '#~delete') {
-                //     $this->memoryGateway->down($profile['userId']);
-                //     $message = "You have deleted all the memories";
-                // }
+
+                // in case you are curious about how to delete a table
+                /*
+                if (strtolower($intent) == '#~delete') {
+                    if ($source == "user") {
+                        $userId = $profile['userId'];
+                        $tableName = $userId;
+                    } else if ($source == "room") {
+                        $roomId = $event['source']['roomId'];
+                        $tableName = $roomId;
+                    } else if ($source == "group") {
+                        $groupId = $event['source']['groupId'];
+                        $tableName = $groupId;
+                    }
+                    $this->memoryGateway->down($tableName);
+                    $message = "You have deleted all the memories";
+                }
+                */
             }
         } else {
-            $mustAddMessage = "Hi, add me as friend first so I can help you remember your To-Do List " . $this->emojiBuilder('10007A');
+            $mustAddMessage = "Hi, add me as friend first. So I can help you remember your To-Do List " . $this->emojiBuilder('10007A');
             switch (strtolower($intent)) {
                 case '.add':
                 case '.del':
@@ -435,7 +436,7 @@ class Webhook extends Controller
 
             $theMessage = implode("\n", $list);
         } else {
-            $theMessage = "Yeay. No list you have to do.";
+            $theMessage = "Yeay. Nothing you have to do.";
         }
 
         return $theMessage;
