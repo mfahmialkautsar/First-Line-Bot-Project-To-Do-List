@@ -220,7 +220,9 @@ class Webhook extends Controller
 
     private function textMessage($event)
     {
-        $help = "\tHow To Use\n‣To save Note: Type \".add [your note]\"\n‣To delete Note: Type \".del [note number]\"\n^You can delete multiple notes, e.g. \".del 2 1 3\" will delete notes no. 2, 1, and 3.\n‣To view Note List: Type \".show\"\n‣For Help: Type \".help\"\n\n*The Notes saved in this To-Do List will be different for each prvate chat, multi chat, and group chat. So, you can create your personal To-Do List and To-Do List for team. " . $this->emojiBuilder('10008A');
+        $help = "\tHow To Use\n‣To save Note: Type \".add [your note]\"\n‣To delete Note: Type \".del [note number]\"\n^You can delete multiple notes, e.g. \".del 2 1 3\" will delete notes no. 2, 1, and 3.\n‣To view Note List: Type \".show\"\n‣For Help: Type \".help\"\n\n*The Notes saved in this To-Do List will be different for each private chat, multi chat, and group chat. So, you can create your personal To-Do List and To-Do List for team. " . $this->emojiBuilder('10008A');
+
+        // set default (fallback) message
         $message = "Oops, there's something wrong.";
         $text = $event['message']['text'];
         $trim = trim($text);

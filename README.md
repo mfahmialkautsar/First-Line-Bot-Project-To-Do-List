@@ -1,10 +1,10 @@
 # Remember Me LINE Bot
-As the name said, Remember Me will remember your to-do list and notes so that you never forget that.
+Remember Me will remember your To-Do List and Notes so that you never forget them.
 
-This bot can save notes from different source like Personal Chat, Multi Chat, and Group Chat. So you can make Personal To-Do List or To-Do List for team.
+This bot can save notes from different source like Personal Chat, Multi Chat, and Group Chat. So you can make your Personal To-Do List or To-Do List for team.
 
 ## Screenshot
-
+<img src="./resources/personal%20chat.jpg" width="512" title="Personal Chat">
 
 ### App Features
 * [x] Saving notes
@@ -20,16 +20,18 @@ Bot ID: @343bjvaa
 
 ### Configuration
 This project won't work without some configurations. For me, I uploaded this project to Heroku and used postgresql as database source. So, this configuration must be done in heroku config:
-- `APP_KEY`                 : Generate result from web.php
-- `CHANNEL_ACCESS_TOKEN`    : From LINE Developers
-- `CHANNEL_SECRET`          : From LINE Developers
-- `DB_CONNECTION`           : `pgsql`
-- `DB_DATABASE`             : From view credentials database
-- `DB_HOST`                 : From view credentials database
-- `DB_PASSWORD`             : From view credentials database
-- `DB_PORT`                 : `5432`
-- `DB_USERNAME`             : From view credentials database
-- `LOG_CHANNEL`             : `errorlog`
+- `APP_KEY`: Generate result from web.php
+- `CHANNEL_ACCESS_TOKEN`: From LINE Developers
+- `CHANNEL_SECRET`: From LINE Developers
+- `DB_CONNECTION`: `pgsql`
+- `DB_DATABASE`: From view credentials database
+- `DB_HOST`: From view credentials database
+- `DB_PASSWORD` : From view credentials database
+- `DB_PORT`: `5432`
+- `DB_USERNAME`: From view credentials database
+- `LOG_CHANNEL`: `errorlog`
+
+And set Webhook URL as: `https://your-domain/public/webhook`
 
 ### Licenses
 - [Lumen](https://lumen.laravel.com/docs/7.x)
