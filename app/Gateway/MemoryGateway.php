@@ -90,14 +90,13 @@ class MemoryGateway extends Migration
         return null;
     }
 
-    function forgetMemory(string $tableName, int $id, $message)
+    function forgetMemory(string $tableName, int $id)
     {
         // DB::table($tableName)
         // ->where('id', $id)
         // ->delete();
 
         $this->getRowNumber($tableName, $id, "DELETE", "id");
-        return $message;
     }
 
     private function getRowNumber($tableName, $num, $option, $order)

@@ -93,6 +93,7 @@ class Webhook extends Controller
 
         if (is_array($data['events'])) {
             foreach ($data['events'] as $event) {
+
                 // handle group and room event
                 if (!isset($event['source']['userId'])) {
                     if ($event['type'] == "join") {
@@ -148,17 +149,12 @@ class Webhook extends Controller
 
     private function followCallback($event)
     {
-        // $text = $event['message']['text'];
-        // $trim = trim($text);
-        // $words = preg_split("/[\s,]+/", $trim);
-        // $intent = $words[0];
-
         $res = $this->bot->getProfile($event['source']['userId']);
         if ($res->isSucceeded()) {
             $profile = $res->getJSONDecodedBody();
 
             // create welcome message
-            $message = "Halo, " . $profile['displayName'] . "!";
+            $message = "Hello, " . $profile['displayName'] . "!";
             $messageBuilder = $this->welcomeMessage($message);
 
             // save user data
@@ -167,28 +163,9 @@ class Webhook extends Controller
                 $profile['displayName']
             );
         }
-        //  else {
-        //     $message = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
-        //     switch (strtolower($intent)) {
-        //         case '.new':
-        //         case '.del':
-        //         case '.show':
-        //         case '.help':
-        //             $message = $message;
-        //             break;
-
-        //         default:
-        //             if (strtolower($text) != "bot leave") {
-        //                 return;
-        //             } else {
-        //                 $message = $message;
-        //                 break;
-        //             }
-        //     }
-        //     $messageBuilder = new TextMessageBuilder($message);
-        // }
 
         if (isset($messageBuilder)) {
+
             // send reply message
             $this->bot->replyMessage($event['replyToken'], $messageBuilder);
         }
@@ -206,7 +183,7 @@ class Webhook extends Controller
         }
 
         // create welcome message
-        $message = "Hai " . "Gaes!";
+        $message = "Hello, " . "Everyone!";
 
         // send reply message
         $this->bot->replyMessage($event['replyToken'], $this->welcomeMessage($message));
@@ -226,7 +203,7 @@ class Webhook extends Controller
 
     private function welcomeMessage($message)
     {
-        $introduction = "Aku adalah bot yang akan membantu mengingat To-Do List kamu supaya kamu tidak lupa.";
+        $introduction = "I'm a bot that will help you remember your To-Do List so you'll never forget that.";
         $stickerMessageBuilder = new StickerMessageBuilder(11538, 51626494);
 
         // prepare help button
@@ -251,8 +228,8 @@ class Webhook extends Controller
     {
         // $help2 = "Tips: kamu bisa hapus beberapa note sekaligus " . $this->emojiBuilder('10007F') . "\nContoh mau hapus note nomor 2, 5, dan 11. Kamu bisa tulis \".del 2 5 11\"";
 
-        $help = "\tHow To Use\n‣Untuk menyimpan note: Ketik \".new [note kamu]\"\n‣Untuk menghapus note: Ketik \".del [nomor note]\"\n‣Untuk melihat list note: Ketik \".show\"\n‣Untuk melihat bantuan: Ketik \".help\"\n\n*Note yang disimpan di To-Do List ini akan berbeda untuk setiap private chat, multi chat, dan group chat. Jadi kamu bisa bikin To-Do List pribadi dan To-Do List grup.";
-        $message = "Ups, ada yang salah.";
+        $help = "\tHow To Use\n‣To save Note: Type \".add [your note]\"\n‣To delete Note: Type \".del [note number]\"\n ^You can delete multiple notes, e.g. \".del 2 1 3\" will delete notes num 2, 1, and 3.\n‣To view Note List: Type \".show\"\n‣For Help: Type \".help\"\n\n*The Notes saved in this To-Do List will be different for each prvate chat, multi chat, and group chat. So, you can create personal To-Do List and To-Do List for team.";
+        $message = "Oops, there's something wrong.";
         $text = $event['message']['text'];
         $trim = trim($text);
         $words = preg_split("/[\s,]+/", $trim);
@@ -303,67 +280,101 @@ class Webhook extends Controller
                 }
 
                 switch (strtolower($intent)) {
-                    case '.new':
+                    case '.add':
                         if ($note) {
-                            $reply = "Note Tersimpan " . $this->emojiBuilder('100041');
+                            $reply = "Note Saved " . $this->emojiBuilder('100041');
                             $message = $this->memoryGateway->rememberThis($tableName, $note, $reply);
                         } else {
-                            $message = "Kamu mau buat note apa?\nKetik \".new [note kamu]\" ya!";
+                            $message = "What note do wanna add?\nType \".add [your note]\"!";
                         }
                         break;
                     case '.del':
                         if ($note) {
-                            $reply = "Note Dihapus " . $this->emojiBuilder('10008F');
+
+                            // test
+                            // $message = "OOPS";
+                            // $words = ["2", 3, 1, 2, 6];
+                            
                             $deleteCount = count($words);
-                            if ($deleteCount == 1) {
-                                // for ($i = 0; $i < $deleteCount; $i++) {
-                                // extract int
-                                preg_match_all('!\d+\.*\d*!', $words[0], $result);
-                                // check if there's int
-                                if (isset($result[0][0]) && ($result[0][0] == (int) $words[0])) {
-                                    // check if has just 1 int
-                                    if (!isset($result[0][1])) {
-                                        if ($result[0][0] > $this->memoryGateway->count($tableName)) {
-                                            $isPassed = false;
-                                        } else {
-                                            $isPassed = true;
-                                        }
-                                    } else {
-                                        $isPassed = false;
-                                    }
-                                } else {
+                            $newWords = array();
+
+                            // check input
+                            for ($i = 0; $i < $deleteCount; $i++) {
+
+                                // check if the input is one digit integer only
+                                if (strlen($words[$i]) != 1 || !is_numeric($words[$i])) {
                                     $isPassed = false;
+                                    break;
                                 }
-                                // }
+                                if (!is_int($words[$i] + 0)) {
+                                    $isPassed = false;
+                                    break;
+                                }
+                                $number = (int) $words[$i];
+                                
+                                // check if there's same input
+                                if (in_array($number, $newWords)) {
+                                    $message = "Oops, you can't delete the same number";
+                                    $isPassed = false;
+                                break;
+                                }
+
+                                // check if input is not out of bound
+                                if ($number > $this->memoryGateway->count($tableName)) {
+                                    $isPassed = false;
+                                break;
+                                } else {
+                                    array_push($newWords, $number);
+                                    $isPassed = true;
+                                }
                             }
 
                             // delete note
                             if (isset($isPassed) && $isPassed) {
-                                $message = $this->memoryGateway->forgetMemory($tableName, $words[0], $reply);
+                                // set reply
+                                $reply = "Note Deleted " . $this->emojiBuilder('10008F');
+
+                                // algorithm for deleting table item based on array
+                                $deletes = array();
+                                $temp = 0;
+                                $smallest = $words[0];
+                                foreach ($words as $value) {
+                                    $final = $value;
+                                    if ($value > $smallest) {
+                                        $final = $value - $temp;
+                                    } elseif ($value < $smallest) {
+                                        $smallest = $value;
+                                    }
+                                    $temp++;
+                                    array_push($deletes, $final);
+                                }
+
+                                for ($i = 0; $i < count($deletes); $i++) {
+                                    // echo ($deletes[$i]);
+                                    $this->memoryGateway->forgetMemory($tableName, $deletes[$i]);
+                                }
+                                $message = $reply;
                             }
-                            // else {
-                            //     continue;
-                            // }
                         } else {
-                            $message = "Note apa yang mau dihapus?\nKetik \".del [nomor note]\" ya!";
+                            $message = "What note do you wanna delete?\nType \".del [note number]\"";
                         }
                         break;
                     case '.show':
                         $message = $this->remembering($tableName);
                         if ($note) {
-                            $additionalMessage = new TextMessageBuilder("Cukup ketik \".show\" aja buat menampilkan To-Do List ya.");
+                            $additionalMessage = new TextMessageBuilder("Just type \".show\" to see your To-Do List.");
                         }
                         break;
                     case '.help':
                         $message = $help;
                         if ($note) {
-                            $additionalMessage = new TextMessageBuilder("Cukup ketik \".help\" aja buat menampilkan bantuan ya.");
+                            $additionalMessage = new TextMessageBuilder("Just type \".help\" for help.");
                         }
                         break;
 
                     default:
                         if ($source == "user") {
-                            $message = "Aku belum mengerti maksud kamu nih " . $this->emojiBuilder('100084') . "\nKetik \".help\" untuk bantuan.";
+                            $message = "Sorry, mate. I don't understand. " . $this->emojiBuilder('100084') . "\nType \".help\" for help.";
                         } else {
                             return;
                         }
@@ -375,9 +386,9 @@ class Webhook extends Controller
                 // }
             }
         } else {
-            $mustAddMessage = "Hai, tambahkan aku sebagai teman dulu ya " . $this->emojiBuilder('10007A');
+            $mustAddMessage = "Hi, add me as friend first so I can help you remember your To-Do List " . $this->emojiBuilder('10007A');
             switch (strtolower($intent)) {
-                case '.new':
+                case '.add':
                 case '.del':
                 case '.show':
                 case '.help':
@@ -424,7 +435,7 @@ class Webhook extends Controller
 
             $theMessage = implode("\n", $list);
         } else {
-            $theMessage = "Yeay. Tidak ada tugas yang harus dikerjakan.";
+            $theMessage = "Yeay. No list you have to do.";
         }
 
         return $theMessage;
