@@ -220,13 +220,13 @@ class Webhook extends Controller
 
     private function textMessage($event)
     {
-        $help = "\tHow To Use\n‣To save Note: Type \".add [your note]\"\n‣To delete Note: Type \".del [note number]\"\n^You can delete multiple notes, e.g. \".del 2 1 3\" will delete notes no. 2, 1, and 3.\n‣To view Note List: Type \".show\"\n‣For Help: Type \".help\"\n\n*The Notes saved in this To-Do List will be different for each private chat, multi chat, and group chat. So, you can create your personal To-Do List and To-Do List for team. " . $this->emojiBuilder('10008A');
+        $help = "\tHow To Use\n‣To save Note: Type \".add [your note]\"\n‣To delete Note: Type \".del [note number]\"\n^You can delete multiple notes, e.g. \".del 2 1 3\" will delete notes no. 2, 1, and 3.\n‣To view Note List: Type \".show\"\n‣For Help: Type \".help\"\n‣(WARNING) To clear all Notes: Type \"#~clearall\"\n\n*The Notes saved in this To-Do List will be different for each private chat, multi chat, and group chat. So, you can create your personal To-Do List and To-Do List for team. " . $this->emojiBuilder('10008A');
 
         // set default (fallback) message
         $message = "Oops, there's something wrong.";
         $text = $event['message']['text'];
         $trim = trim($text);
-        $words = preg_split("/[\s,]+/", $trim);
+        $words = explode(" ", $trim);
         $intent = $words[0];
         $note = null;
 
@@ -275,14 +275,16 @@ class Webhook extends Controller
 
                 switch (strtolower($intent)) {
                     case '.add':
+                    case '.a':
                         if ($note) {
                             $reply = "Note Saved " . $this->emojiBuilder('100041');
-                            $message = $this->memoryGateway->rememberThis($tableName, $note, $reply);
+                            $message = $this->memoryGateway->remember($tableName, $note, $reply);
                         } else {
                             $message = "What note do wanna add?\nType \".add [your note]\"";
                         }
                         break;
                     case '.del':
+                    case '.d';
                         if ($note) {
 
                             $deleteCount = count($words);
@@ -291,8 +293,8 @@ class Webhook extends Controller
                             // check input
                             for ($i = 0; $i < $deleteCount; $i++) {
 
-                                // check if the input is one digit integer only
-                                if (strlen($words[$i]) != 1 || !is_numeric($words[$i])) {
+                                // check if the input is integer only
+                                if (!is_numeric($words[$i])) {
                                     $isPassed = false;
                                     break;
                                 }
@@ -304,7 +306,7 @@ class Webhook extends Controller
 
                                 // check if there's same input
                                 if (in_array($number, $newWords)) {
-                                    $message = "Oops, you can't delete the same number";
+                                    $message = "Oops, you can't delete the same numbers";
                                     $isPassed = false;
                                     break;
                                 }
@@ -349,18 +351,26 @@ class Webhook extends Controller
                         }
                         break;
                     case '.show':
+                    case '.s':
                         $message = $this->remembering($tableName);
                         if ($note) {
                             $additionalMessage = new TextMessageBuilder("Just type \".show\" to see your To-Do List.");
                         }
                         break;
                     case '.help':
+                    case '.h':
                         $message = $help;
                         if ($note) {
                             $additionalMessage = new TextMessageBuilder("Just type \".help\" for help.");
                         }
                         break;
 
+                    case '#~clearall':
+                        if (!$note) {
+                            $this->memoryGateway->amnesia($tableName);
+                            $message = "All notes cleared " . $this->emojiBuilder("1000AE");
+                        }
+                        break;
                     default:
                         if ($source == "user") {
                             $message = "Sorry, mate. I don't understand. " . $this->emojiBuilder('100084') . "\nType \".help\" for help.";
@@ -369,24 +379,6 @@ class Webhook extends Controller
                         }
                         break;
                 }
-
-                // in case you are curious about how to delete a table
-                /*
-                if (strtolower($intent) == '#~delete') {
-                    if ($source == "user") {
-                        $userId = $profile['userId'];
-                        $tableName = $userId;
-                    } else if ($source == "room") {
-                        $roomId = $event['source']['roomId'];
-                        $tableName = $roomId;
-                    } else if ($source == "group") {
-                        $groupId = $event['source']['groupId'];
-                        $tableName = $groupId;
-                    }
-                    $this->memoryGateway->down($tableName);
-                    $message = "You have deleted all the memories";
-                }
-                */
             }
         } else {
             $mustAddMessage = "Hi, add me as friend first. So I can help you remember your To-Do List " . $this->emojiBuilder('10007A');

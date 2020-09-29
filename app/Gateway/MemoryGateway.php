@@ -49,7 +49,7 @@ class MemoryGateway extends Migration
      * 
      * @return void
      */
-    public function down(string $tableName)
+    public function amnesia(string $tableName)
     {
         Schema::dropIfExists($tableName);
     }
@@ -62,7 +62,7 @@ class MemoryGateway extends Migration
         return 0;
     }
 
-    public function rememberThis($tableName, $note, $message)
+    public function remember($tableName, $note, $message)
     {
         if (Schema::hasTable($tableName)) {
             DB::table($tableName)
@@ -71,7 +71,7 @@ class MemoryGateway extends Migration
                 ]);
         } else {
             $this->up($tableName);
-            $this->rememberThis($tableName, $note, $message);
+            $this->remember($tableName, $note, $message);
         }
 
         return $message;
