@@ -1,7 +1,7 @@
 {
-    "name": "laravel/lumen",
-    "description": "The Laravel Lumen Framework.",
-    "keywords": ["framework", "laravel", "lumen"],
+    "name": "mfahmialkautsar/rememberme",
+    "description": "LINE Bot for saving notes",
+    "keywords": ["LINE", "Bot", "Notes", "Note"],
     "license": "MIT",
     "type": "project",
     "require": {
